@@ -16,10 +16,11 @@ import {
 } from '../../adapters/PredictionAdapter';
 import { MatchCard } from '../../components/MatchCard';
 import { isMatchLocked } from '../../utils/MatchLock';
-import { hasRecentResults } from '../../utils/RecentResultsEvaluator';
+import { hasRecentResults, findDeadlineMatches } from '../../utils/RecentResultsEvaluator';
 import { useIsMobile } from '../../utils/UseIsMobile';
 
 const RESULTS_NOTIFIED_KEY = 'quiniela2026.results_notified';
+const DEADLINE_NOTIFIED_KEY = 'quiniela2026.deadline_notified';
 
 interface IMatchesResponse {
   matches: unknown;
@@ -170,6 +171,22 @@ export const Dashboard = (): ReactElement => {
         toast.success(
           '¡Nuevos marcadores publicados! Revisa la tabla de posiciones.'
         );
+      }
+
+      const predictedIds: ReadonlySet<string> = new Set(
+        predictionList.map((p: IPrediction): string => p.matchId)
+      );
+      const deadlineMatches: IMatch[] = findDeadlineMatches(matchList, predictedIds);
+      if (
+        deadlineMatches.length > 0 &&
+        sessionStorage.getItem(DEADLINE_NOTIFIED_KEY) === null
+      ) {
+        sessionStorage.setItem(DEADLINE_NOTIFIED_KEY, '1');
+        const message: string =
+          deadlineMatches.length === 1
+            ? `${deadlineMatches[0].homeTeam.name} vs ${deadlineMatches[0].awayTeam.name} cierra en menos de 24 h y aún no tienes predicción.`
+            : `Tienes ${deadlineMatches.length} partidos que cierran en menos de 24 h sin predicción registrada.`;
+        toast.warning(message);
       }
     } finally {
       setLoading(false);

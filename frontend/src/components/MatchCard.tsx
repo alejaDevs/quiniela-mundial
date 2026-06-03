@@ -155,6 +155,19 @@ const lockedBadgeStyle: CSSProperties = {
   fontWeight: Theme.Typography.labelMd.fontWeight
 };
 
+const deadlineBadgeStyle: CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: Theme.Spacing.xs,
+  padding: `${Theme.Spacing.xs} ${Theme.Spacing.sm}`,
+  borderRadius: Theme.Radii.full,
+  backgroundColor: Theme.Colors.tertiaryFixed,
+  color: Theme.Colors.onTertiaryContainer,
+  fontSize: Theme.Typography.labelMd.fontSize,
+  fontWeight: Theme.Typography.labelMd.fontWeight,
+  textTransform: 'none'
+};
+
 const parseScore = (raw: string): number => {
   const parsed: number = Number.parseInt(raw, 10);
   if (Number.isNaN(parsed) || parsed < 0) {
@@ -230,18 +243,32 @@ export const MatchCard = ({
             {match.groupLabel !== null ? `Grupo ${match.groupLabel}` : match.stage}
           </span>
           <span>•</span>
-          <span style={{ textTransform: 'none' }}>{formatKickoff(match.kickoffDate)}</span>
           {locked ? (
-            <span style={lockedBadgeStyle}>
+            <>
+              <span style={{ textTransform: 'none' }}>
+                {formatKickoff(match.kickoffDate)}
+              </span>
+              <span style={lockedBadgeStyle}>
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: '16px' }}
+                >
+                  lock
+                </span>
+                Bloqueado
+              </span>
+            </>
+          ) : (
+            <span style={deadlineBadgeStyle}>
               <span
                 className="material-symbols-outlined"
-                style={{ fontSize: '16px' }}
+                style={{ fontSize: '14px' }}
               >
-                lock
+                schedule
               </span>
-              Bloqueado
+              Límite: {formatKickoff(match.kickoffDate)}
             </span>
-          ) : null}
+          )}
         </div>
 
         {isMobile ? (
