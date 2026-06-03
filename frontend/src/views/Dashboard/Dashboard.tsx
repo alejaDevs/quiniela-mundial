@@ -39,10 +39,6 @@ interface IDraft {
   awayScore: number | null;
 }
 
-interface IToast {
-  message: string;
-  ok: boolean;
-}
 
 const headerStyle = (isMobile: boolean): CSSProperties => ({
   marginBottom: isMobile ? Theme.Spacing.lg : Theme.Spacing.xl
@@ -106,18 +102,6 @@ const saveButtonStyle = (disabled: boolean): CSSProperties => ({
   cursor: disabled ? 'default' : 'pointer'
 });
 
-const toastStyle = (ok: boolean): CSSProperties => ({
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: Theme.Spacing.xs,
-  padding: `${Theme.Spacing.xs} ${Theme.Spacing.md}`,
-  borderRadius: Theme.Radii.full,
-  fontFamily: Theme.Typography.fontFamilyBody,
-  fontSize: Theme.Typography.labelMd.fontSize,
-  fontWeight: Theme.Typography.labelMd.fontWeight,
-  backgroundColor: ok ? Theme.Colors.primaryFixed : Theme.Colors.errorContainer,
-  color: ok ? Theme.Colors.primary : Theme.Colors.onErrorContainer
-});
 
 const messageStyle: CSSProperties = {
   fontFamily: Theme.Typography.fontFamilyBody,
@@ -136,9 +120,6 @@ export const Dashboard = (): ReactElement => {
   const [drafts, setDrafts] = useState<Map<string, IDraft>>(new Map());
   const [loading, setLoading] = useState<boolean>(true);
   const [savingId, setSavingId] = useState<string | null>(null);
-  const [toastByMatchId, setToastByMatchId] = useState<Map<string, IToast>>(
-    new Map()
-  );
 
   const loadData = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -235,21 +216,7 @@ export const Dashboard = (): ReactElement => {
     return predictionsByMatchId.get(matchId)?.predictedAwayScore ?? null;
   };
 
-  const showToast = (matchId: string, message: string, ok: boolean): void => {
-    setToastByMatchId(
-      (prev: Map<string, IToast>): Map<string, IToast> =>
-        new Map(prev).set(matchId, { message, ok })
-    );
-    setTimeout((): void => {
-      setToastByMatchId((prev: Map<string, IToast>): Map<string, IToast> => {
-        const next: Map<string, IToast> = new Map(prev);
-        next.delete(matchId);
-        return next;
-      });
-    }, 3000);
-  };
-
-  const handleSaveMatch = async (match: IMatch): Promise<void> => {
+const handleSaveMatch = async (match: IMatch): Promise<void> => {
     const draft: IDraft | undefined = drafts.get(match.id);
     if (
       draft === undefined ||
@@ -281,20 +248,22 @@ export const Dashboard = (): ReactElement => {
         next.delete(match.id);
         return next;
       });
-      showToast(match.id, 'Predicción guardada', true);
+      toast.success(
+        `Pronóstico de ${match.homeTeam.name} vs ${match.awayTeam.name} guardado. Puedes verlo en Mis Predicciones.`
+      );
     } catch (err: unknown) {
       const message: string =
         typeof err === 'object' && err !== null && 'message' in err
           ? String((err as { message: unknown }).message)
           : 'Error al guardar';
-      showToast(match.id, message, false);
+      toast.error(message);
     } finally {
       setSavingId(null);
     }
   };
 
   const upcomingMatches: IMatch[] = matches.filter(
-    (m: IMatch): boolean => !m.isFinished
+    (m: IMatch): boolean => !m.isFinished && !predictionsByMatchId.has(m.id)
   );
 
   return (
@@ -310,7 +279,11 @@ export const Dashboard = (): ReactElement => {
       {loading ? (
         <div style={messageStyle}>Cargando partidos…</div>
       ) : upcomingMatches.length === 0 ? (
-        <div style={messageStyle}>Aún no hay partidos próximos.</div>
+        <div style={messageStyle}>
+          {matches.filter((m: IMatch): boolean => !m.isFinished).length === 0
+            ? 'Aún no hay partidos próximos.'
+            : '¡Ya tienes pronóstico en todos los partidos disponibles!'}
+        </div>
       ) : (
         <div style={listStyle}>
           {upcomingMatches.map(
@@ -322,7 +295,6 @@ export const Dashboard = (): ReactElement => {
                 draft.awayScore !== null;
               const locked: boolean = isMatchLocked(new Date(match.kickoffDate));
               const isSaving: boolean = savingId === match.id;
-              const toast: IToast | undefined = toastByMatchId.get(match.id);
 
               return (
                 <div key={match.id} style={matchWrapperStyle}>
@@ -338,17 +310,6 @@ export const Dashboard = (): ReactElement => {
                     }
                   />
                   <div style={matchActionRowStyle}>
-                    {toast !== undefined ? (
-                      <span style={toastStyle(toast.ok)}>
-                        <span
-                          className="material-symbols-outlined"
-                          style={{ fontSize: '14px', fontVariationSettings: "'FILL' 1" }}
-                        >
-                          {toast.ok ? 'check_circle' : 'error'}
-                        </span>
-                        {toast.message}
-                      </span>
-                    ) : null}
                     {!locked ? (
                       <button
                         type="button"
