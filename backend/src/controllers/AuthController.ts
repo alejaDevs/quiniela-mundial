@@ -14,6 +14,10 @@ interface ILoginBody {
   password: string;
 }
 
+interface IChangePasswordBody {
+  newPassword: string;
+}
+
 const isString = (value: unknown): value is string => {
   return typeof value === 'string' && value.length > 0;
 };
@@ -35,6 +39,13 @@ const parseRegisterBody = (body: unknown): IRegisterBody | null => {
     password: candidate.password,
     displayName: candidate.displayName.trim()
   };
+};
+
+const parseChangePasswordBody = (body: unknown): IChangePasswordBody | null => {
+  if (typeof body !== 'object' || body === null) return null;
+  const candidate: Record<string, unknown> = body as Record<string, unknown>;
+  if (!isString(candidate.newPassword)) return null;
+  return { newPassword: candidate.newPassword };
 };
 
 const parseLoginBody = (body: unknown): ILoginBody | null => {
@@ -90,6 +101,36 @@ export const register = async (
         isAdmin: created.isAdmin
       }
     });
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
+export const changePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const body: IChangePasswordBody | null = parseChangePasswordBody(req.body);
+    if (body === null) {
+      res.status(400).json({ message: 'newPassword is required' });
+      return;
+    }
+    if (req.authUser === undefined) {
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
+    }
+    const user: IUserDocument | null = await UserModel.findById(
+      req.authUser.userId
+    );
+    if (user === null) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+    user.passwordHash = await hashPassword(body.newPassword);
+    await user.save();
+    res.status(200).json({ message: 'Password updated' });
   } catch (error: unknown) {
     next(error);
   }

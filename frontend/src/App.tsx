@@ -10,6 +10,7 @@ import { MisPredicciones } from './views/MisPredicciones/MisPredicciones';
 import { Resultados } from './views/Resultados/Resultados';
 import { Leaderboard } from './views/Leaderboard/Leaderboard';
 import { Admin } from './views/Admin/Admin';
+import { CambiarContrasena } from './views/CambiarContrasena/CambiarContrasena';
 
 export const App = (): ReactElement => {
   return (
@@ -36,6 +37,10 @@ export const App = (): ReactElement => {
                   <Admin />
                 </ProtectedRoute>
               }
+            />
+            <Route
+              path="/cambiar-contrasena"
+              element={<CambiarContrasena />}
             />
           </Route>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

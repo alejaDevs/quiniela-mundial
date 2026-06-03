@@ -35,15 +35,14 @@ const innerStyle: CSSProperties = {
   padding: `${Theme.Spacing.md} ${Theme.Spacing.lg}`
 };
 
-// ─── Desktop: equipo en columna horizontal con bandera ───────────────────────
+// ─── Desktop: equipo en columna vertical (bandera arriba, nombre abajo) ───────
 
-const desktopTeamStyle = (alignEnd: boolean): CSSProperties => ({
+const desktopTeamColumnStyle = (isHome: boolean): CSSProperties => ({
   display: 'flex',
-  alignItems: 'center',
-  gap: Theme.Spacing.md,
-  flex: '1 1 160px',
-  justifyContent: 'flex-start',
-  flexDirection: alignEnd ? 'row' : 'row-reverse'
+  flexDirection: 'column',
+  alignItems: isHome ? 'flex-start' : 'flex-end',
+  gap: Theme.Spacing.xs,
+  flex: '1 1 0'
 });
 
 const desktopTeamNameStyle: CSSProperties = {
@@ -54,23 +53,21 @@ const desktopTeamNameStyle: CSSProperties = {
   color: Theme.Colors.onSurface
 };
 
-// ─── Mobile: fila de equipos (nombres a los lados) ───────────────────────────
+// ─── Mobile: banderas en fila superior, nombres en fila inferior ─────────────
 
-const mobileTeamsRowStyle: CSSProperties = {
+const mobileFlagsRowStyle: CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
   flex: '1 1 100%'
 };
 
-const mobileTeamItemStyle = (isHome: boolean): CSSProperties => ({
+const mobileNamesRowStyle: CSSProperties = {
   display: 'flex',
+  justifyContent: 'space-between',
   alignItems: 'center',
-  gap: Theme.Spacing.xs,
-  maxWidth: '48%',
-  minWidth: 0,
-  flexDirection: isHome ? 'row' : 'row-reverse'
-});
+  flex: '1 1 100%'
+};
 
 const mobileTeamNameStyle: CSSProperties = {
   fontFamily: Theme.Typography.fontFamilyDisplay,
@@ -78,6 +75,7 @@ const mobileTeamNameStyle: CSSProperties = {
   lineHeight: Theme.Typography.labelLg.lineHeight,
   fontWeight: Theme.Typography.labelLg.fontWeight,
   color: Theme.Colors.onSurface,
+  maxWidth: '45%',
   minWidth: 0,
   overflow: 'hidden',
   textOverflow: 'ellipsis',
@@ -273,42 +271,42 @@ export const MatchCard = ({
 
         {isMobile ? (
           <>
-            <div style={mobileTeamsRowStyle}>
-              <div style={mobileTeamItemStyle(true)}>
-                <span style={mobileTeamNameStyle}>{match.homeTeam.name}</span>
-                <FlagIcon
-                  countryCode={match.homeTeam.countryCode}
-                  alt={`Bandera de ${match.homeTeam.name}`}
-                  size="sm"
-                />
-              </div>
-              <div style={mobileTeamItemStyle(false)}>
-                <FlagIcon
-                  countryCode={match.awayTeam.countryCode}
-                  alt={`Bandera de ${match.awayTeam.name}`}
-                  size="sm"
-                />
-                <span style={mobileTeamNameStyle}>{match.awayTeam.name}</span>
-              </div>
+            <div style={mobileFlagsRowStyle}>
+              <FlagIcon
+                countryCode={match.homeTeam.countryCode}
+                alt={`Bandera de ${match.homeTeam.name}`}
+                size="sm"
+              />
+              <FlagIcon
+                countryCode={match.awayTeam.countryCode}
+                alt={`Bandera de ${match.awayTeam.name}`}
+                size="sm"
+              />
+            </div>
+            <div style={mobileNamesRowStyle}>
+              <span style={mobileTeamNameStyle}>{match.homeTeam.name}</span>
+              <span style={{ ...mobileTeamNameStyle, textAlign: 'right' }}>
+                {match.awayTeam.name}
+              </span>
             </div>
             <div style={mobileScoreRowStyle}>{renderInputs()}</div>
           </>
         ) : (
           <>
-            <div style={desktopTeamStyle(true)}>
-              <span style={desktopTeamNameStyle}>{match.homeTeam.name}</span>
+            <div style={desktopTeamColumnStyle(true)}>
               <FlagIcon
                 countryCode={match.homeTeam.countryCode}
                 alt={`Bandera de ${match.homeTeam.name}`}
               />
+              <span style={desktopTeamNameStyle}>{match.homeTeam.name}</span>
             </div>
             {renderInputs()}
-            <div style={desktopTeamStyle(false)}>
-              <span style={desktopTeamNameStyle}>{match.awayTeam.name}</span>
+            <div style={desktopTeamColumnStyle(false)}>
               <FlagIcon
                 countryCode={match.awayTeam.countryCode}
                 alt={`Bandera de ${match.awayTeam.name}`}
               />
+              <span style={desktopTeamNameStyle}>{match.awayTeam.name}</span>
             </div>
           </>
         )}

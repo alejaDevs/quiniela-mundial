@@ -74,3 +74,12 @@ export const apiPut = async <T>(path: string, body: unknown): Promise<T> => {
   });
   return parseResponse<T>(response);
 };
+
+export const apiPatch = async <T>(path: string, body: unknown): Promise<T> => {
+  const response: Response = await fetch(`${API_BASE_URL}${path}`, {
+    method: 'PATCH',
+    headers: buildHeaders(true),
+    body: JSON.stringify(body)
+  });
+  return parseResponse<T>(response);
+};
