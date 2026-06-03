@@ -1,6 +1,7 @@
 import { ReactElement, ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
+import { NotFound } from '../views/NotFound/NotFound';
 
 interface IProtectedRouteProps {
   children: ReactNode;
@@ -18,7 +19,7 @@ export const ProtectedRoute = ({
   }
 
   if (requireAdmin && !user.isAdmin) {
-    return <Navigate to="/dashboard" replace />;
+    return <NotFound />;
   }
 
   return <>{children}</>;

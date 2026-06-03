@@ -198,7 +198,8 @@ export const listMatchPredictions = async (
       (p: IPredictionDocument): Types.ObjectId => p.user
     );
     const users: IUserDocument[] = await UserModel.find({
-      _id: { $in: userIds }
+      _id: { $in: userIds },
+      isAdmin: false
     }).lean<IUserDocument[]>();
 
     const userById: Map<string, IUserDocument> = new Map();

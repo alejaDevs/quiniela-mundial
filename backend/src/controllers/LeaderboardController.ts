@@ -19,7 +19,7 @@ export const getLeaderboard = async (
 ): Promise<void> => {
   try {
     const [users, finishedMatches, predictions] = await Promise.all([
-      UserModel.find().lean<IUserDocument[]>(),
+      UserModel.find({ isAdmin: false }).lean<IUserDocument[]>(),
       MatchModel.find({ isFinished: true }).lean<IMatchDocument[]>(),
       PredictionModel.find().lean<IPredictionDocument[]>()
     ]);

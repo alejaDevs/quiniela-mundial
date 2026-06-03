@@ -72,6 +72,11 @@ export const upsertPrediction = async (
       return;
     }
 
+    if (req.authUser.isAdmin) {
+      res.status(403).json({ message: 'Admin users cannot submit predictions' });
+      return;
+    }
+
     const body: IUpsertBody | null = parseBody(req.body);
     if (body === null) {
       res.status(400).json({ message: 'Invalid prediction payload' });

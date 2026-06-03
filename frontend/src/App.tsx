@@ -11,6 +11,7 @@ import { Resultados } from './views/Resultados/Resultados';
 import { Leaderboard } from './views/Leaderboard/Leaderboard';
 import { Admin } from './views/Admin/Admin';
 import { CambiarContrasena } from './views/CambiarContrasena/CambiarContrasena';
+import { NotFound } from './views/NotFound/NotFound';
 
 export const App = (): ReactElement => {
   return (
@@ -44,7 +45,7 @@ export const App = (): ReactElement => {
             />
           </Route>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
