@@ -15,6 +15,18 @@ import {
   setStoredToken
 } from '../utils/ApiClient';
 
+const USER_STORAGE_KEY = 'quiniela2026.user';
+
+const restoreUser = (): IUser | null => {
+  try {
+    const raw: string | null = localStorage.getItem(USER_STORAGE_KEY);
+    if (raw === null) return null;
+    return adaptUserFromApi(JSON.parse(raw) as unknown);
+  } catch {
+    return null;
+  }
+};
+
 interface IAuthResponse {
   token: string;
   user: unknown;
@@ -44,11 +56,12 @@ export const AuthProvider = ({
   children,
   initialUser
 }: IAuthProviderProps): ReactElement => {
-  const [user, setUser] = useState<IUser | null>(initialUser ?? null);
+  const [user, setUser] = useState<IUser | null>(initialUser ?? restoreUser());
   const [token, setToken] = useState<string | null>(getStoredToken());
 
   const setSession = useCallback((nextToken: string, nextUser: IUser): void => {
     setStoredToken(nextToken);
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(nextUser));
     setToken(nextToken);
     setUser(nextUser);
   }, []);
@@ -83,6 +96,7 @@ export const AuthProvider = ({
 
   const logout = useCallback((): void => {
     setStoredToken(null);
+    localStorage.removeItem(USER_STORAGE_KEY);
     setToken(null);
     setUser(null);
   }, []);

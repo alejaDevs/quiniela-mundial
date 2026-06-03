@@ -4,6 +4,7 @@ import { IMatch } from '../types/Index';
 import { FlagIcon } from './FlagIcon';
 import { isMatchLocked } from '../utils/MatchLock';
 import { formatKickoff } from '../utils/FormatScore';
+import { useIsMobile } from '../utils/UseIsMobile';
 
 interface IMatchCardProps {
   match: IMatch;
@@ -34,7 +35,9 @@ const innerStyle: CSSProperties = {
   padding: `${Theme.Spacing.md} ${Theme.Spacing.lg}`
 };
 
-const teamStyle = (alignEnd: boolean): CSSProperties => ({
+// ─── Desktop: equipo en columna horizontal con bandera ───────────────────────
+
+const desktopTeamStyle = (alignEnd: boolean): CSSProperties => ({
   display: 'flex',
   alignItems: 'center',
   gap: Theme.Spacing.md,
@@ -43,7 +46,7 @@ const teamStyle = (alignEnd: boolean): CSSProperties => ({
   flexDirection: alignEnd ? 'row' : 'row-reverse'
 });
 
-const teamNameStyle: CSSProperties = {
+const desktopTeamNameStyle: CSSProperties = {
   fontFamily: Theme.Typography.fontFamilyDisplay,
   fontSize: Theme.Typography.headlineMd.fontSize,
   lineHeight: Theme.Typography.headlineMd.lineHeight,
@@ -51,22 +54,66 @@ const teamNameStyle: CSSProperties = {
   color: Theme.Colors.onSurface
 };
 
-const scoreContainerStyle: CSSProperties = {
+// ─── Mobile: fila de equipos (nombres a los lados) ───────────────────────────
+
+const mobileTeamsRowStyle: CSSProperties = {
   display: 'flex',
+  justifyContent: 'space-between',
   alignItems: 'center',
-  gap: Theme.Spacing.md,
-  backgroundColor: Theme.Colors.surfaceContainerLow,
-  padding: Theme.Spacing.sm,
-  borderRadius: Theme.Radii.md
+  flex: '1 1 100%'
 };
 
-const inputStyle = (disabled: boolean): CSSProperties => ({
-  width: '64px',
-  height: '64px',
+const mobileTeamItemStyle = (isHome: boolean): CSSProperties => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: Theme.Spacing.xs,
+  maxWidth: '48%',
+  minWidth: 0,
+  flexDirection: isHome ? 'row' : 'row-reverse'
+});
+
+const mobileTeamNameStyle: CSSProperties = {
+  fontFamily: Theme.Typography.fontFamilyDisplay,
+  fontSize: Theme.Typography.labelLg.fontSize,
+  lineHeight: Theme.Typography.labelLg.lineHeight,
+  fontWeight: Theme.Typography.labelLg.fontWeight,
+  color: Theme.Colors.onSurface,
+  minWidth: 0,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap'
+};
+
+// ─── Mobile: fila del marcador centrado ──────────────────────────────────────
+
+const mobileScoreRowStyle: CSSProperties = {
+  display: 'flex',
+  justifyContent: 'center',
+  flex: '1 1 100%'
+};
+
+// ─── Compartidos ─────────────────────────────────────────────────────────────
+
+const scoreContainerStyle = (isMobile: boolean): CSSProperties => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: isMobile ? Theme.Spacing.xs : Theme.Spacing.md,
+  backgroundColor: Theme.Colors.surfaceContainerLow,
+  padding: isMobile ? Theme.Spacing.xs : Theme.Spacing.sm,
+  borderRadius: Theme.Radii.md
+});
+
+const inputStyle = (disabled: boolean, isMobile: boolean): CSSProperties => ({
+  width: isMobile ? '48px' : '64px',
+  height: isMobile ? '48px' : '64px',
   textAlign: 'center',
   fontFamily: Theme.Typography.fontFamilyDisplay,
-  fontSize: Theme.Typography.scoreDisplay.fontSize,
-  lineHeight: Theme.Typography.scoreDisplay.lineHeight,
+  fontSize: isMobile
+    ? Theme.Typography.headlineMd.fontSize
+    : Theme.Typography.scoreDisplay.fontSize,
+  lineHeight: isMobile
+    ? Theme.Typography.headlineMd.lineHeight
+    : Theme.Typography.scoreDisplay.lineHeight,
   fontWeight: Theme.Typography.scoreDisplay.fontWeight,
   color: Theme.Colors.onSurface,
   backgroundColor: Theme.Colors.surfaceContainerLowest,
@@ -76,11 +123,13 @@ const inputStyle = (disabled: boolean): CSSProperties => ({
   opacity: disabled ? 0.6 : 1
 });
 
-const dashStyle: CSSProperties = {
+const dashStyle = (isMobile: boolean): CSSProperties => ({
   fontFamily: Theme.Typography.fontFamilyDisplay,
-  fontSize: Theme.Typography.headlineLg.fontSize,
+  fontSize: isMobile
+    ? Theme.Typography.bodyMd.fontSize
+    : Theme.Typography.headlineLg.fontSize,
   color: Theme.Colors.outlineVariant
-};
+});
 
 const metaStyle: CSSProperties = {
   display: 'flex',
@@ -123,6 +172,7 @@ export const MatchCard = ({
   variant = 'editable',
   highlight = false
 }: IMatchCardProps): ReactElement => {
+  const isMobile = useIsMobile();
   const kickoff: Date = new Date(match.kickoffDate);
   const locked: boolean = isMatchLocked(kickoff);
   const inputsDisabled: boolean = variant === 'readonly' || locked;
@@ -143,6 +193,34 @@ export const MatchCard = ({
       onAwayScoreChange(parseScore(event.target.value));
     }
   };
+
+  const renderInputs = (): ReactElement => (
+    <div style={scoreContainerStyle(isMobile)}>
+      <input
+        type="number"
+        min="0"
+        max="99"
+        value={homeValue}
+        placeholder="0"
+        onChange={handleHome}
+        disabled={inputsDisabled}
+        aria-label={`Predicción ${match.homeTeam.name}`}
+        style={inputStyle(inputsDisabled, isMobile)}
+      />
+      <span style={dashStyle(isMobile)}>-</span>
+      <input
+        type="number"
+        min="0"
+        max="99"
+        value={awayValue}
+        placeholder="0"
+        onChange={handleAway}
+        disabled={inputsDisabled}
+        aria-label={`Predicción ${match.awayTeam.name}`}
+        style={inputStyle(inputsDisabled, isMobile)}
+      />
+    </div>
+  );
 
   return (
     <article style={cardStyle(highlight)}>
@@ -165,45 +243,48 @@ export const MatchCard = ({
             </span>
           ) : null}
         </div>
-        <div style={teamStyle(true)}>
-          <span style={teamNameStyle}>{match.homeTeam.name}</span>
-          <FlagIcon
-            countryCode={match.homeTeam.countryCode}
-            alt={`Bandera de ${match.homeTeam.name}`}
-          />
-        </div>
-        <div style={scoreContainerStyle}>
-          <input
-            type="number"
-            min="0"
-            max="99"
-            value={homeValue}
-            placeholder="0"
-            onChange={handleHome}
-            disabled={inputsDisabled}
-            aria-label={`Predicción ${match.homeTeam.name}`}
-            style={inputStyle(inputsDisabled)}
-          />
-          <span style={dashStyle}>-</span>
-          <input
-            type="number"
-            min="0"
-            max="99"
-            value={awayValue}
-            placeholder="0"
-            onChange={handleAway}
-            disabled={inputsDisabled}
-            aria-label={`Predicción ${match.awayTeam.name}`}
-            style={inputStyle(inputsDisabled)}
-          />
-        </div>
-        <div style={teamStyle(false)}>
-          <span style={teamNameStyle}>{match.awayTeam.name}</span>
-          <FlagIcon
-            countryCode={match.awayTeam.countryCode}
-            alt={`Bandera de ${match.awayTeam.name}`}
-          />
-        </div>
+
+        {isMobile ? (
+          <>
+            <div style={mobileTeamsRowStyle}>
+              <div style={mobileTeamItemStyle(true)}>
+                <span style={mobileTeamNameStyle}>{match.homeTeam.name}</span>
+                <FlagIcon
+                  countryCode={match.homeTeam.countryCode}
+                  alt={`Bandera de ${match.homeTeam.name}`}
+                  size="sm"
+                />
+              </div>
+              <div style={mobileTeamItemStyle(false)}>
+                <FlagIcon
+                  countryCode={match.awayTeam.countryCode}
+                  alt={`Bandera de ${match.awayTeam.name}`}
+                  size="sm"
+                />
+                <span style={mobileTeamNameStyle}>{match.awayTeam.name}</span>
+              </div>
+            </div>
+            <div style={mobileScoreRowStyle}>{renderInputs()}</div>
+          </>
+        ) : (
+          <>
+            <div style={desktopTeamStyle(true)}>
+              <span style={desktopTeamNameStyle}>{match.homeTeam.name}</span>
+              <FlagIcon
+                countryCode={match.homeTeam.countryCode}
+                alt={`Bandera de ${match.homeTeam.name}`}
+              />
+            </div>
+            {renderInputs()}
+            <div style={desktopTeamStyle(false)}>
+              <span style={desktopTeamNameStyle}>{match.awayTeam.name}</span>
+              <FlagIcon
+                countryCode={match.awayTeam.countryCode}
+                alt={`Bandera de ${match.awayTeam.name}`}
+              />
+            </div>
+          </>
+        )}
       </div>
     </article>
   );
