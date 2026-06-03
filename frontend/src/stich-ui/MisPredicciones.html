@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mis Predicciones Guardadas - FIFA 2026</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Montserrat:wght@700;800;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config from Style Guidance -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#42493e",
+                    "on-tertiary-fixed-variant": "#544600",
+                    "surface-tint": "#3b6934",
+                    "on-tertiary-container": "#4c3e00",
+                    "inverse-on-surface": "#f0f1f2",
+                    "primary-fixed": "#bcf0ae",
+                    "on-primary": "#ffffff",
+                    "tertiary": "#705d00",
+                    "error": "#ba1a1a",
+                    "primary-container": "#2d5a27",
+                    "tertiary-container": "#c9a900",
+                    "primary": "#154212",
+                    "surface-container": "#edeeef",
+                    "on-tertiary-fixed": "#221b00",
+                    "on-primary-fixed": "#002201",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#2e3132",
+                    "error-container": "#ffdad6",
+                    "outline": "#72796e",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#e1e3e4",
+                    "tertiary-fixed": "#ffe16d",
+                    "inverse-primary": "#a1d494",
+                    "on-primary-fixed-variant": "#23501e",
+                    "secondary-fixed-dim": "#9ecaff",
+                    "primary-fixed-dim": "#a1d494",
+                    "surface-bright": "#f8f9fa",
+                    "on-secondary-fixed": "#001d36",
+                    "outline-variant": "#c2c9bb",
+                    "surface-container-low": "#f3f4f5",
+                    "on-secondary-fixed-variant": "#00497d",
+                    "surface-container-high": "#e7e8e9",
+                    "tertiary-fixed-dim": "#e9c400",
+                    "on-primary-container": "#9dd090",
+                    "on-surface": "#191c1d",
+                    "surface-container-highest": "#e1e3e4",
+                    "secondary-fixed": "#d1e4ff",
+                    "surface-dim": "#d9dadb",
+                    "surface": "#f8f9fa",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "background": "#f8f9fa",
+                    "on-background": "#191c1d",
+                    "on-secondary-container": "#00355c",
+                    "secondary": "#0061a4",
+                    "secondary-container": "#33a0fd",
+                    "on-secondary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "gutter": "16px",
+                    "margin-mobile": "20px",
+                    "margin-desktop": "40px",
+                    "card-padding": "12px 24px"
+            },
+            "fontFamily": {
+                    "label-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg-mobile": ["Montserrat"],
+                    "score-display": ["Montserrat"],
+                    "body-md": ["Inter"],
+                    "display-lg": ["Montserrat"],
+                    "headline-lg": ["Montserrat"],
+                    "headline-md": ["Montserrat"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "score-display": ["36px", {"lineHeight": "44px", "fontWeight": "800"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for minimalist look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #e1e3e4;
+            border-radius: 4px;
+        }
+        
+        /* Remove default number input spinners */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col">
+<!-- TopNavBar Shared Component -->
+<header class="shadow-sm bg-surface sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop max-w-[1200px] mx-auto h-16">
+<!-- Brand -->
+<div class="font-display-lg text-headline-lg font-black text-primary flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="sports_soccer" style="font-variation-settings: 'FILL' 1;">sports_soccer</span>
+                FIFA 2026
+            </div>
+<!-- Navigation Links (Hidden on Mobile) -->
+<nav class="hidden md:flex gap-8">
+<a class="text-primary border-b-2 border-primary pb-1 font-label-lg text-label-lg" href="#">Predictions</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-low rounded-lg px-2 py-1 font-label-lg text-label-lg" href="#">Leaderboard</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-low rounded-lg px-2 py-1 font-label-lg text-label-lg" href="#">Admin</a>
+</nav>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-4">
+<button class="hidden md:flex bg-primary text-on-primary px-4 py-2 rounded-full font-label-lg text-label-lg hover:opacity-80 transition-all duration-200">
+                    My Predictions
+                </button>
+<button class="text-on-surface-variant hover:text-primary hover:bg-surface-container-low p-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary hover:bg-surface-container-low p-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full max-w-[1200px] mx-auto px-margin-mobile md:px-margin-desktop py-8 md:py-12">
+<!-- Page Header -->
+<div class="mb-8 md:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="font-display-lg text-headline-lg-mobile md:text-display-lg text-on-surface mb-2">Mis Predicciones Guardadas</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Revisa y ajusta tus pronósticos para los próximos encuentros. Los cambios se guardarán automáticamente al actualizar.</p>
+</div>
+<!-- Status Chip / Meta info -->
+<div class="inline-flex items-center gap-2 bg-surface-container px-4 py-2 rounded-full border border-outline-variant/30 self-start md:self-auto">
+<span class="w-2 h-2 rounded-full bg-primary pulse-animation"></span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Fase de Grupos - Jornada 1</span>
+</div>
+</div>
+<!-- Predictions List Container -->
+<div class="flex flex-col gap-4 mb-12">
+<!-- Match Card 1 (Editable Saved State) -->
+<article class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] border-t-2 border-transparent hover:border-primary transition-all duration-300 w-full overflow-hidden">
+<div class="w-full flex flex-col md:flex-row items-center justify-between p-4 md:p-[12px_24px] gap-6">
+<!-- Team A (Left) -->
+<div class="flex items-center gap-4 flex-1 justify-end md:justify-start w-full md:w-auto">
+<span class="font-headline-md text-headline-md text-on-surface hidden md:block">Argentina</span>
+<div class="w-12 h-12 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant shadow-sm shrink-0" data-alt="A close-up, high-quality circular icon representing the national flag of Argentina. The light blue and white stripes are crisp and vibrant, set against a pristine white background. The lighting is bright and even, highlighting the details of the central sun emblem. The overall aesthetic is clean, professional, and suitable for a high-end sports application." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDh93Kz27CPUeC8SLUDMwVwjguGYW-6DIsuB5zV_GZ_uB4w8Wn1TlApryKrQX_9XkZtnOlblLOsuKS5RpEyROTT343rzEeSCo-wUOres4Ysu-g8oWzHHDCl-UPbyJDnq-8QVYfpa2GuBAw0E2sTV_qKaIiFCvvZ46QYpvTGX0zwwKcQr_sEuzI07uGwiaMoZXUw9gv3-fyG9T-_aGLwmkcwPtJQ3COG9zTrmX5QBvjSSVfngFvJrBsWx-Vs2R91Y9muiKYdTraa94w'); background-size: cover; background-position: center;">
+</div>
+<span class="font-headline-md text-headline-md text-on-surface md:hidden">ARG</span>
+</div>
+<!-- Score Input (Center) -->
+<div class="flex items-center gap-4 shrink-0 bg-surface-container-low p-2 rounded-lg">
+<div class="flex flex-col items-center">
+<input class="w-16 h-16 text-center font-score-display text-score-display text-on-surface bg-surface-container-lowest border-2 border-outline-variant/30 rounded-lg focus:border-secondary focus:ring-0 transition-colors" max="99" min="0" type="number" value="2"/>
+</div>
+<span class="font-headline-lg text-headline-lg text-outline-variant">-</span>
+<div class="flex flex-col items-center">
+<input class="w-16 h-16 text-center font-score-display text-score-display text-on-surface bg-surface-container-lowest border-2 border-outline-variant/30 rounded-lg focus:border-secondary focus:ring-0 transition-colors" max="99" min="0" type="number" value="1"/>
+</div>
+</div>
+<!-- Team B (Right) -->
+<div class="flex items-center gap-4 flex-1 justify-start md:justify-end w-full md:w-auto flex-row-reverse md:flex-row">
+<span class="font-headline-md text-headline-md text-on-surface hidden md:block">Brasil</span>
+<div class="w-12 h-12 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant shadow-sm shrink-0" data-alt="A close-up, high-quality circular icon representing the national flag of Brazil. The vibrant green and yellow colors are sharp and saturated, with the central blue globe clearly visible. The lighting is bright and even, creating a clean, professional aesthetic suitable for a high-end sports application. The background is a minimalist light tone." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCc8nTlY6qia5fv4H_kxNApunQMAjHxqpUnjCYDj-i8ZOzA6poYHUb9meYuxdSgwdsro5U_7xmTP94-8x7bIwXiGkKKdZ6dKOjzMjNvAjr6eP2H7yo_zXJ5iG5l6BBZk9Qr4OKRk6lq-Y5vyXjCPie8epjGfPuFfz7A40ZJMOF3Q58U3yoTXS-rnoBnate_4C7DJ67hQHp55bMZiQT_R6Avj_GadvC6t6RYn-IH8g2_QR5ZRCVnYe02Pxs7X7i9tIsnkxjlKbrEdIA'); background-size: cover; background-position: center;">
+</div>
+<span class="font-headline-md text-headline-md text-on-surface md:hidden">BRA</span>
+</div>
+</div>
+</article>
+<!-- Match Card 2 -->
+<article class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] border-t-2 border-transparent hover:border-primary transition-all duration-300 w-full overflow-hidden relative">
+<!-- Highlight indicator for 'Match of the Day' or similar could be a tiny accent line, we'll use a subtle side accent here for variety within constraints -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary opacity-50"></div>
+<div class="w-full flex flex-col md:flex-row items-center justify-between p-4 md:p-[12px_24px] gap-6 pl-5 md:pl-[28px]">
+<!-- Team A -->
+<div class="flex items-center gap-4 flex-1 justify-end md:justify-start w-full md:w-auto">
+<span class="font-headline-md text-headline-md text-on-surface hidden md:block">Francia</span>
+<div class="w-12 h-12 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant shadow-sm shrink-0" data-alt="A pristine, circular icon displaying the national flag of France. The blue, white, and red vertical stripes are vividly colored and sharply defined. The image is rendered with a flat, modern lighting style that eliminates harsh shadows, perfectly matching a clean, light-mode user interface design for a global sports event." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA6hhWYhmH45xz7wQXp2Ob9N6vV5_Q1TwNqM47hdFHYEdQ9ltLgtq4FEWYjMKCvqGpC_r1CsLH4bIdOVBDYQ04MVCKLFB0H8qhkeVC7fOHo8O7DzlkSV7yA7p5XD3doW2qw7YxvbS85mhWyHWez34CnAwdDIim4eGfkAUlKzTCaxybxNQSYOK64S5W1jEHR8azX-VBg6PV0aqwumppe_UGR_JN2vXc4Fp-OiZPELi7XhqwdnUvNMUInzVd3Fucu7pNrg6MZPWESnKk'); background-size: cover; background-position: center;">
+</div>
+<span class="font-headline-md text-headline-md text-on-surface md:hidden">FRA</span>
+</div>
+<!-- Score Input -->
+<div class="flex items-center gap-4 shrink-0 bg-surface-container-low p-2 rounded-lg">
+<div class="flex flex-col items-center">
+<input class="w-16 h-16 text-center font-score-display text-score-display text-on-surface bg-surface-container-lowest border-2 border-outline-variant/30 rounded-lg focus:border-secondary focus:ring-0 transition-colors" max="99" min="0" type="number" value="3"/>
+</div>
+<span class="font-headline-lg text-headline-lg text-outline-variant">-</span>
+<div class="flex flex-col items-center">
+<input class="w-16 h-16 text-center font-score-display text-score-display text-on-surface bg-surface-container-lowest border-2 border-outline-variant/30 rounded-lg focus:border-secondary focus:ring-0 transition-colors" max="99" min="0" type="number" value="0"/>
+</div>
+</div>
+<!-- Team B -->
+<div class="flex items-center gap-4 flex-1 justify-start md:justify-end w-full md:w-auto flex-row-reverse md:flex-row">
+<span class="font-headline-md text-headline-md text-on-surface hidden md:block">Alemania</span>
+<div class="w-12 h-12 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant shadow-sm shrink-0" data-alt="A highly detailed circular badge representing the flag of Germany. The horizontal bands of black, red, and gold are rich and deeply saturated. The composition is simple and symmetrical, positioned against a stark white background to emphasize a minimalist, professional sports aesthetic. The overall mood is serious and competitive." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA6xLgM32eCdGJBOvKrWZOUkVgV9IGQgKfcHDkqATv_UOGMwzHTkSxE7XO2iEJbLMoOkc5602Tqz9zhZYknj7rSf4RHruzLbCf4u7KbFe5e7EVvP9JzXbnYUYUkSMNJz3pS8he4MNwqaSxJXyXt4nEC5zk_ffNbQe9dhP3-A8U5E9w4EYEeyGYYRHLmGRG2R5G-bjHPy2wibjgX_RAi6tvVGh3jd5iKsvDD_zh17TZHuCsO219qBfAI3GuxBCCrMSPc4xnYYYX5eqg'); background-size: cover; background-position: center;">
+</div>
+<span class="font-headline-md text-headline-md text-on-surface md:hidden">GER</span>
+</div>
+</div>
+</article>
+<!-- Match Card 3 -->
+<article class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] border-t-2 border-transparent hover:border-primary transition-all duration-300 w-full overflow-hidden">
+<div class="w-full flex flex-col md:flex-row items-center justify-between p-4 md:p-[12px_24px] gap-6">
+<!-- Team A -->
+<div class="flex items-center gap-4 flex-1 justify-end md:justify-start w-full md:w-auto">
+<span class="font-headline-md text-headline-md text-on-surface hidden md:block">España</span>
+<div class="w-12 h-12 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant shadow-sm shrink-0" data-alt="A clean, modern circular icon featuring the national flag of Spain. The red and yellow stripes, along with the detailed coat of arms, are presented with high clarity. The lighting is soft and diffuse, intended to sit perfectly within a minimalist, light-mode interface focused on sports analytics." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBk88SJYYx9-hYkBt6547hGZ3oMHKEoyI3Hf4Z3ZuIHMcUEjJoNHrBFhOKJB9l7uoyCroKxjCXdAILXgmZVUoklkqO44fAC3qGle7_KKJKtJYeDCHAiH262-MGDNRdzwMv-vGB7pukLYYtOjmwwgU5fOnTPCF5GHnb012tbnWNyUU2OJtWtx8r18tHdORj2W3WBCymmtxdaBkdq_wMQuYNYr0upscbfMbk_KvmChqYmgdEeMxZq12MxhWgBLKtCTRuHMNZeT9hhOJI'); background-size: cover; background-position: center;">
+</div>
+<span class="font-headline-md text-headline-md text-on-surface md:hidden">ESP</span>
+</div>
+<!-- Score Input -->
+<div class="flex items-center gap-4 shrink-0 bg-surface-container-low p-2 rounded-lg">
+<div class="flex flex-col items-center">
+<input class="w-16 h-16 text-center font-score-display text-score-display text-on-surface bg-surface-container-lowest border-2 border-outline-variant/30 rounded-lg focus:border-secondary focus:ring-0 transition-colors" max="99" min="0" type="number" value="1"/>
+</div>
+<span class="font-headline-lg text-headline-lg text-outline-variant">-</span>
+<div class="flex flex-col items-center">
+<input class="w-16 h-16 text-center font-score-display text-score-display text-on-surface bg-surface-container-lowest border-2 border-outline-variant/30 rounded-lg focus:border-secondary focus:ring-0 transition-colors" max="99" min="0" type="number" value="1"/>
+</div>
+</div>
+<!-- Team B -->
+<div class="flex items-center gap-4 flex-1 justify-start md:justify-end w-full md:w-auto flex-row-reverse md:flex-row">
+<span class="font-headline-md text-headline-md text-on-surface hidden md:block">Inglaterra</span>
+<div class="w-12 h-12 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant shadow-sm shrink-0" data-alt="A crisp circular badge displaying the St George's Cross, representing England. The bright red cross on a pure white background provides stark, energetic contrast. The image is designed to feel precise and professional, blending seamlessly into a high-end, minimalist sports prediction dashboard." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCOablvVHyarmxHPRKMSoq88-laElevQAz-hKROxui9hIqvZ347na4y4XAmsisa5f6w0tiJhcaO3higNFRT-Rp4u9MQcVmCdWPr3mUG_CrlisdJLvIA-stEM8Dm5QSItK7xjdN3yLzYYr38vWbbG4-TqfNblq9kyVxn4HAFxbEneeONIINrrW6UYObKOvKRNfnJ9_kESw4LzlVsj5w0tyouowXTEr4E6nYUrsMugja3lLYYJqb_5pEQic-qeSmbNfV0d2Yh_Vu_NVQ'); background-size: cover; background-position: center;">
+</div>
+<span class="font-headline-md text-headline-md text-on-surface md:hidden">ENG</span>
+</div>
+</div>
+</article>
+</div>
+<!-- Action Area -->
+<div class="flex justify-end pt-6 border-t border-surface-variant">
+<button class="bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg px-8 py-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="save">save</span>
+                Actualizar Predicciones
+            </button>
+</div>
+</main>
+<!-- Footer Shared Component -->
+<footer class="bg-surface-container-high w-full mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-desktop py-8 max-w-[1200px] mx-auto">
+<!-- Brand & Copyright -->
+<div class="flex flex-col items-center md:items-start gap-2 mb-6 md:mb-0">
+<div class="font-headline-md text-headline-md font-bold text-on-surface">
+                    FIFA 2026
+                </div>
+<div class="font-label-md text-label-md text-on-surface-variant">
+                    © 2026 FIFA World Cup Analytics. All rights reserved.
+                </div>
+</div>
+<!-- Links -->
+<div class="flex gap-6">
+<a class="font-label-md text-label-md text-on-surface-variant hover:underline hover:text-primary transition-colors duration-200" href="#">Terms of Service</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:underline hover:text-primary transition-colors duration-200" href="#">Privacy Policy</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:underline hover:text-primary transition-colors duration-200" href="#">Contact Support</a>
+</div>
+</div>
+</footer>
+<script>
+        // Simple script to handle input focus styles across the complex input structure if needed,
+        // though Tailwind focus/ring utilities handle the basics well.
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.parentElement.classList.add('ring-1', 'ring-secondary');
+            });
+            input.addEventListener('blur', function() {
+                this.parentElement.parentElement.classList.remove('ring-1', 'ring-secondary');
+            });
+        });
+    </script>
+</body></html>

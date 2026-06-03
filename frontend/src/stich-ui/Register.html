@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Registro - FIFA 2026 World Cup Analytics</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Montserrat:wght@700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-variant": "#e1e3e4",
+                      "error-container": "#ffdad6",
+                      "tertiary-fixed": "#ffe16d",
+                      "surface-container-highest": "#e1e3e4",
+                      "secondary-fixed-dim": "#9ecaff",
+                      "tertiary-fixed-dim": "#e9c400",
+                      "background": "#f8f9fa",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary-fixed": "#002201",
+                      "tertiary-container": "#c9a900",
+                      "secondary": "#0061a4",
+                      "primary-fixed": "#bcf0ae",
+                      "on-surface": "#191c1d",
+                      "tertiary": "#705d00",
+                      "surface-dim": "#d9dadb",
+                      "error": "#ba1a1a",
+                      "on-tertiary": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "primary-fixed-dim": "#a1d494",
+                      "surface": "#f8f9fa",
+                      "on-surface-variant": "#42493e",
+                      "on-secondary-container": "#00355c",
+                      "inverse-surface": "#2e3132",
+                      "on-secondary-fixed": "#001d36",
+                      "on-primary-container": "#9dd090",
+                      "surface-container": "#edeeef",
+                      "surface-bright": "#f8f9fa",
+                      "primary": "#154212",
+                      "inverse-primary": "#a1d494",
+                      "surface-container-low": "#f3f4f5",
+                      "on-error": "#ffffff",
+                      "surface-tint": "#3b6934",
+                      "on-secondary-fixed-variant": "#00497d",
+                      "on-tertiary-fixed": "#221b00",
+                      "secondary-container": "#33a0fd",
+                      "on-primary-fixed-variant": "#23501e",
+                      "secondary-fixed": "#d1e4ff",
+                      "outline": "#72796e",
+                      "on-tertiary-fixed-variant": "#544600",
+                      "on-tertiary-container": "#4c3e00",
+                      "primary-container": "#2d5a27",
+                      "on-error-container": "#93000a",
+                      "inverse-on-surface": "#f0f1f2",
+                      "on-secondary": "#ffffff",
+                      "outline-variant": "#c2c9bb",
+                      "surface-container-high": "#e7e8e9",
+                      "on-background": "#191c1d"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "card-padding": "12px 24px",
+                      "margin-desktop": "40px",
+                      "margin-mobile": "20px",
+                      "gutter": "16px",
+                      "base": "8px"
+              },
+              "fontFamily": {
+                      "label-lg": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Montserrat"
+                      ],
+                      "headline-lg": [
+                              "Montserrat"
+                      ],
+                      "headline-md": [
+                              "Montserrat"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "score-display": [
+                              "Montserrat"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Montserrat"
+                      ]
+              },
+              "fontSize": {
+                      "label-lg": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "score-display": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "800"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+          .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+          }
+      </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex items-center justify-center p-margin-mobile md:p-margin-desktop font-body-md antialiased">
+<!-- Main Container - Split Layout on Desktop -->
+<main class="w-full max-w-[1000px] flex flex-col md:flex-row bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] overflow-hidden border border-surface-dim">
+<!-- Left Side: Visual/Branding (Hidden on mobile) -->
+<div class="hidden md:flex md:w-1/2 bg-surface-variant relative overflow-hidden flex-col justify-between p-12">
+<!-- Decorative Image -->
+<div class="absolute inset-0 bg-cover bg-center opacity-80" data-alt="A sweeping, high-contrast photograph of a pristine professional soccer pitch illuminated by bright stadium lights. The vibrant green turf stretches towards the horizon, punctuated by stark white lines. The image exudes a professional, energetic, and celebratory atmosphere, characteristic of a global tournament setting. The clean, modern aesthetic aligns perfectly with a light-mode, minimalist design interface focused on sports analytics." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDgnQWjjIG5nItlwrGhajDGzvhGgBQFloCU9aRVSeAstmojW5vObXSnjl2cQS8KdFOZMJHM_ErSF3iwsvvVgRM1G0l_BSFcmMgi5UvVY6l18KMQNNmBciiScUE-H0aserybzjvgeWuc0T0zxO8zkQRypIRsPgeyUpflN_QpL5t3pP_bilts-mGzwNTzOHaxXU6pGZ_0OK5MUak08UeTSqdpv7_w-OwjjI2Yl9cNobWMl9m4KQNSnEAHdBqeHx-x7kggy0MQBXNHPHg');">
+<!-- Gradient Overlay for readability if text is placed on top -->
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent"></div>
+</div>
+<div class="relative z-10">
+<h1 class="font-display-lg text-display-lg text-on-primary">FIFA 2026</h1>
+<p class="font-headline-md text-headline-md text-primary-fixed mt-2">Unete a la acción</p>
+</div>
+<div class="relative z-10 mt-auto">
+<p class="font-body-md text-body-md text-on-primary max-w-sm">
+                    Predice, compite y domina la tabla de clasificación mundial. Tu análisis profesional comienza aquí.
+                </p>
+</div>
+</div>
+<!-- Right Side: Registration Form -->
+<div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-surface-container-lowest">
+<!-- Mobile Header (Visible only on mobile) -->
+<div class="md:hidden mb-8 text-center">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">FIFA 2026</h1>
+</div>
+<!-- Form Header -->
+<div class="mb-8">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Crear Cuenta</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Ingresa tus datos para registrarte en la plataforma.</p>
+</div>
+<!-- Form -->
+<form action="#" class="space-y-6" method="POST">
+<!-- Username Input -->
+<div class="space-y-2">
+<label class="block font-label-lg text-label-lg text-on-surface" for="username">Nombre de Usuario</label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">person</span>
+</span>
+<input class="block w-full pl-10 pr-3 py-3 border border-outline-variant rounded-lg bg-surface font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary transition-colors" id="username" name="username" placeholder="tu_usuario" required="" type="text"/>
+</div>
+</div>
+<!-- Password Input -->
+<div class="space-y-2">
+<label class="block font-label-lg text-label-lg text-on-surface" for="password">Contraseña</label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+</span>
+<input class="block w-full pl-10 pr-3 py-3 border border-outline-variant rounded-lg bg-surface font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary transition-colors" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full py-3 px-4 bg-primary text-on-primary font-label-lg text-label-lg rounded-lg shadow-sm hover:bg-primary-container hover:text-on-primary-container focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-200" type="submit">
+                    Registrarse
+                </button>
+</form>
+<!-- Bottom Link -->
+<div class="mt-8 text-center">
+<a class="font-label-lg text-label-lg text-secondary hover:text-secondary-container transition-colors" href="#">
+                    ¿Ya tienes cuenta? Inicia sesión
+                </a>
+</div>
+</div>
+</main>
+</body></html>

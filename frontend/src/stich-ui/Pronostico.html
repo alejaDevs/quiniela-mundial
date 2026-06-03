@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mis Pronósticos - FIFA 2026</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Montserrat:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#42493e",
+                        "on-tertiary-fixed-variant": "#544600",
+                        "surface-tint": "#3b6934",
+                        "on-tertiary-container": "#4c3e00",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary-fixed": "#bcf0ae",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#705d00",
+                        "error": "#ba1a1a",
+                        "primary-container": "#2d5a27",
+                        "tertiary-container": "#c9a900",
+                        "primary": "#154212",
+                        "surface-container": "#edeeef",
+                        "on-tertiary-fixed": "#221b00",
+                        "on-primary-fixed": "#002201",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2e3132",
+                        "error-container": "#ffdad6",
+                        "outline": "#72796e",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "tertiary-fixed": "#ffe16d",
+                        "inverse-primary": "#a1d494",
+                        "on-primary-fixed-variant": "#23501e",
+                        "secondary-fixed-dim": "#9ecaff",
+                        "primary-fixed-dim": "#a1d494",
+                        "surface-bright": "#f8f9fa",
+                        "on-secondary-fixed": "#001d36",
+                        "outline-variant": "#c2c9bb",
+                        "surface-container-low": "#f3f4f5",
+                        "on-secondary-fixed-variant": "#00497d",
+                        "surface-container-high": "#e7e8e9",
+                        "tertiary-fixed-dim": "#e9c400",
+                        "on-primary-container": "#9dd090",
+                        "on-surface": "#191c1d",
+                        "surface-container-highest": "#e1e3e4",
+                        "secondary-fixed": "#d1e4ff",
+                        "surface-dim": "#d9dadb",
+                        "surface": "#f8f9fa",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "background": "#f8f9fa",
+                        "on-background": "#191c1d",
+                        "on-secondary-container": "#00355c",
+                        "secondary": "#0061a4",
+                        "secondary-container": "#33a0fd",
+                        "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "gutter": "16px",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "40px",
+                        "card-padding": "12px 24px"
+                    },
+                    "fontFamily": {
+                        "label-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "score-display": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Montserrat"],
+                        "headline-lg": ["Montserrat"],
+                        "headline-md": ["Montserrat"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "score-display": ["36px", { "lineHeight": "44px", "fontWeight": "800" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom styles for number inputs to hide arrows */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        
+        .match-card:hover {
+            border-color: #154212; /* primary/Pitch Green */
+        }
+        
+        .live-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased">
+<!-- TopNavBar -->
+<header class="bg-surface shadow-sm docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop max-w-[1200px] mx-auto h-16">
+<!-- Brand -->
+<div class="font-display-lg text-headline-lg-mobile md:text-headline-lg font-black text-primary flex items-center gap-2">
+                FIFA 2026
+            </div>
+<!-- Navigation -->
+<nav class="hidden md:flex gap-8 items-center h-full">
+<a class="text-primary border-b-2 border-primary pb-1 font-label-lg text-label-lg h-full flex items-center hover:bg-surface-container-low px-3 rounded-t-lg transition-all duration-200 opacity-80" href="#">Predictions</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg h-full flex items-center hover:bg-surface-container-low px-3 rounded-lg" href="#">Leaderboard</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg h-full flex items-center hover:bg-surface-container-low px-3 rounded-lg" href="#">Admin</a>
+</nav>
+<!-- Actions -->
+<div class="flex items-center gap-4">
+<button class="hidden md:block bg-primary text-on-primary px-4 py-2 rounded-lg font-label-lg text-label-lg hover:bg-primary-container transition-colors">
+                    My Predictions
+                </button>
+<div class="flex gap-2 text-on-surface-variant">
+<button aria-label="Profile" class="p-2 hover:bg-surface-container-low rounded-full transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">account_circle</span>
+</button>
+<button aria-label="Logout" class="p-2 hover:bg-surface-container-low rounded-full transition-colors hidden md:block">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">logout</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full px-margin-mobile md:px-margin-desktop max-w-[1200px] mx-auto py-8 flex flex-col gap-8 pb-32">
+<!-- Header Section -->
+<div class="flex flex-col gap-2">
+<h1 class="font-display-lg text-headline-lg-mobile md:text-display-lg text-on-background">Group Stage</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Enter your score predictions for the upcoming matches. Points are awarded for correct outcomes and exact scores.</p>
+</div>
+<!-- Filter/Progress Bar -->
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-surface-variant flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<span class="font-label-lg text-label-lg text-on-surface">Prediction Progress</span>
+<span class="font-label-lg text-label-lg text-primary">12/48 Matches</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 25%"></div>
+</div>
+<div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+<button class="px-4 py-1.5 bg-primary text-on-primary rounded-full font-label-md text-label-md whitespace-nowrap">Group A</button>
+<button class="px-4 py-1.5 bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high rounded-full font-label-md text-label-md whitespace-nowrap transition-colors">Group B</button>
+<button class="px-4 py-1.5 bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high rounded-full font-label-md text-label-md whitespace-nowrap transition-colors">Group C</button>
+<button class="px-4 py-1.5 bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high rounded-full font-label-md text-label-md whitespace-nowrap transition-colors">Group D</button>
+</div>
+</div>
+<!-- Matches List -->
+<div class="flex flex-col gap-4">
+<!-- Match Date Header -->
+<h2 class="font-headline-md text-headline-md text-on-surface-variant mt-4">Matchday 1 - June 11, 2026</h2>
+<!-- Match Card 1 (Match of the Day) -->
+<div class="match-card relative bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] border-[1.5px] border-transparent transition-all duration-200 overflow-hidden">
+<!-- Top Accent Line -->
+<div class="h-1 w-full bg-primary absolute top-0 left-0"></div>
+<div class="p-card-padding flex flex-col md:flex-row items-center justify-between gap-6 pt-6">
+<!-- Context/Status -->
+<div class="flex items-center gap-2 w-full md:w-auto md:absolute md:top-4 md:left-6">
+<span class="px-2 py-0.5 bg-secondary-container/20 text-secondary border border-secondary/30 rounded-full font-label-md text-label-md uppercase tracking-wider text-[10px]">Match of the Day</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Group A • 15:00 EST</span>
+</div>
+<!-- Team A -->
+<div class="flex flex-col md:flex-row items-center gap-4 flex-1 justify-end w-full mt-6 md:mt-0">
+<span class="font-headline-md text-headline-md text-on-surface order-2 md:order-1 text-center md:text-right w-full md:w-auto">Mexico</span>
+<div class="w-16 h-12 rounded overflow-hidden border border-surface-variant order-1 md:order-2 shadow-sm shrink-0">
+<img alt="Mexico Flag" class="w-full h-full object-cover" data-alt="The national flag of Mexico, vibrant green, white, and red vertical stripes with the intricate coat of arms in the center, rendered in crisp, high-definition digital style suitable for a modern sports analytics dashboard interface. Clean lighting, minimalist background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYz79ax3x3jAK2IRUQQVZ2QomfKk08X-LcrN9XZcQeGqhsZ8rblrAZHdj5nBfO19C0yrEpeATucHDxXOWmEG-NM2J5DRPyz3B3eTyWwGb9_3eoGYTkFWlS3crrF_Gzpy9VOXYfGwBmcOeYLM76A5ubc0xKZqQ4dD43OlICrTX8H-oYNuP1yVTPwoe6IiIVxUYUT5VwHT88wrfoiU37hL2iq9qKTtcLCw1VPK4PKH2dBPRU0jGJDHvQ5Zj2ykX3OG3ATMchIATOuJE"/>
+</div>
+</div>
+<!-- Score Input Area -->
+<div class="flex items-center gap-4 shrink-0 bg-surface-bright p-3 rounded-lg border border-surface-variant">
+<input aria-label="Mexico Score Prediction" class="w-16 h-16 text-center font-score-display text-score-display text-on-surface bg-surface-container-lowest border-2 border-outline-variant rounded-lg focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all" max="15" min="0" type="number" value="2"/>
+<span class="font-headline-md text-headline-md text-outline-variant px-2">-</span>
+<input aria-label="Canada Score Prediction" class="w-16 h-16 text-center font-score-display text-score-display text-on-surface bg-surface-container-lowest border-2 border-outline-variant rounded-lg focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all placeholder:text-outline-variant/30" max="15" min="0" placeholder="0" type="number"/>
+</div>
+<!-- Team B -->
+<div class="flex flex-col md:flex-row items-center gap-4 flex-1 justify-start w-full">
+<div class="w-16 h-12 rounded overflow-hidden border border-surface-variant shadow-sm shrink-0">
+<img alt="Canada Flag" class="w-full h-full object-cover" data-alt="The national flag of Canada, striking red and white vertical bands with a bold red maple leaf centered, depicted in sharp, high-resolution digital fidelity for a sleek web interface. Minimalist setting, bright lighting highlighting the vivid red." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD80gof29W8BrhcdbvaRBgp-MOmAU3c4N7DBUZRHKcwu6TuTizPbFC7qA8lttPQEg2BQWnPFLhFSHHtAiW1NmEKpaadaPJHJ77ukUvFs_AftbUY8xyzg-cilqALCuqQyWDV5vwPhT-2G4jvQkTffHMaZdX7-X3FYHO1QNOmiXHPfcXXeZMgvGHfpC6fded-NwWh-a23N9O7COLKOI_IGvpnbS4DHTsNXl4IK4Ga4JM8bSC0BkjxFbApof7rnbvNMsLNd1cMe5yQ5Po"/>
+</div>
+<span class="font-headline-md text-headline-md text-on-surface text-center md:text-left w-full md:w-auto">Canada</span>
+</div>
+</div>
+</div>
+<!-- Match Card 2 -->
+<div class="match-card bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] border-[1.5px] border-surface-variant hover:border-primary transition-all duration-200">
+<div class="p-card-padding flex flex-col md:flex-row items-center justify-between gap-6">
+<!-- Context/Status -->
+<div class="flex items-center gap-2 w-full md:w-auto md:absolute md:mt-[-20px]">
+<span class="font-label-md text-label-md text-on-surface-variant">Group A • 18:00 EST</span>
+</div>
+<!-- Team A -->
+<div class="flex flex-col md:flex-row items-center gap-4 flex-1 justify-end w-full mt-4 md:mt-0">
+<span class="font-headline-md text-headline-md text-on-surface order-2 md:order-1 text-center md:text-right w-full md:w-auto">USA</span>
+<div class="w-16 h-12 rounded overflow-hidden border border-surface-variant order-1 md:order-2 shadow-sm shrink-0">
+<img alt="USA Flag" class="w-full h-full object-cover" data-alt="The national flag of the United States of America, clear stars on blue canton with red and white stripes, rendered flawlessly for a modern sports UI. High contrast, clean edges, subtle shadow framing it within a digital card context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVeVq8WpTrT7GhOtcoFq7TmfZSLJ21XTl7mTtPwggUV4j_Y2TAMAFyJI3Wna-bBudegSF5r2kUTql-WKrfcW752Dl63nOSnPri2dT_Npr51C4hBKtoRvlBmGZ5e0DXZPWch9FipH-UZATZp_PP7tlzzVuScIhtJoDpo-fyMYRfhxFR6TxgJ4vCJP80GO6xaw6F8NMYqzdbgaWW3qwNCULGCDiVjURlsZFSacYynDlj2PaW6sTuZKkr3gslMkoxGYFXGfxIACYc_GI"/>
+</div>
+</div>
+<!-- Score Input Area -->
+<div class="flex items-center gap-4 shrink-0 bg-surface-bright p-3 rounded-lg border border-surface-variant">
+<input aria-label="USA Score Prediction" class="w-16 h-16 text-center font-score-display text-score-display text-on-surface bg-surface-container-lowest border-2 border-outline-variant rounded-lg focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all placeholder:text-outline-variant/30" max="15" min="0" placeholder="0" type="number"/>
+<span class="font-headline-md text-headline-md text-outline-variant px-2">-</span>
+<input aria-label="Senegal Score Prediction" class="w-16 h-16 text-center font-score-display text-score-display text-on-surface bg-surface-container-lowest border-2 border-outline-variant rounded-lg focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all placeholder:text-outline-variant/30" max="15" min="0" placeholder="0" type="number"/>
+</div>
+<!-- Team B -->
+<div class="flex flex-col md:flex-row items-center gap-4 flex-1 justify-start w-full">
+<div class="w-16 h-12 rounded overflow-hidden border border-surface-variant shadow-sm shrink-0">
+<img alt="Senegal Flag" class="w-full h-full object-cover" data-alt="The national flag of Senegal, green, yellow, and red vertical stripes with a central green star, displayed with crisp vector-like quality suitable for a professional sports analytics application. Bright lighting, minimalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAejmWoSd6_c3U6Gu8t6yTL_tk40Bwh8qgjFsalZ-2ow0NR1QkkJwPtvca4QbaER6Owo5aZfXRZ6Qd8xSH29rt-lW5Q7zmkjPE5HtT8xUg5Ptlb1FqseVa2fF85B4oOvnMrPuKp7N9N-mc8izv8HSWFNc-G9AZDnZ4qZboa7eYL2ZxmJzKhdpfRS4GSIi7v4nvEIvSxtBW-5IKXoUt7BelyB3nO2wx9_4FYqKGo8k6ksYQJcb1k32cn6dbvrTz4sjymgAKuuuHiJrw"/>
+</div>
+<span class="font-headline-md text-headline-md text-on-surface text-center md:text-left w-full md:w-auto">Senegal</span>
+</div>
+</div>
+</div>
+<!-- Match Date Header -->
+<h2 class="font-headline-md text-headline-md text-on-surface-variant mt-8">Matchday 2 - June 12, 2026</h2>
+<!-- Match Card 3 -->
+<div class="match-card bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] border-[1.5px] border-surface-variant hover:border-primary transition-all duration-200">
+<div class="p-card-padding flex flex-col md:flex-row items-center justify-between gap-6">
+<!-- Context/Status -->
+<div class="flex items-center gap-2 w-full md:w-auto md:absolute md:mt-[-20px]">
+<span class="font-label-md text-label-md text-on-surface-variant">Group B • 12:00 EST</span>
+</div>
+<!-- Team A -->
+<div class="flex flex-col md:flex-row items-center gap-4 flex-1 justify-end w-full mt-4 md:mt-0">
+<span class="font-headline-md text-headline-md text-on-surface order-2 md:order-1 text-center md:text-right w-full md:w-auto">Spain</span>
+<div class="w-16 h-12 rounded overflow-hidden border border-surface-variant order-1 md:order-2 shadow-sm shrink-0">
+<img alt="Spain Flag" class="w-full h-full object-cover" data-alt="The national flag of Spain, rich red and yellow horizontal bands with the coat of arms, presented in a clean, modern digital format for a sports dashboard. Crisp details, bright colors against a minimalist white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCycU-gyJMMEn-p3anXkeM98y6u-k8042UXZ-IIX3a8SaW5o1P7mMFA7SINBcA2FLkOYwxPU2OBPQBWqE6oTGaKfmyaIUkR4I9Fd_sVVEBgLUPVJH71_2IY4gm2m0jbu8sYmJ52q3me_89ty_sSazdElDrMRPmBaWxK2n3PeKFSd3ERI0jDd-h7Yl8llDCQVQXIxew54cY5U-PXrbBKOTEhPVm1PXiAkKDLLX0uJmJuimINV4LkUFmW-G4twHT-ngJk-Plgz1iJTfI"/>
+</div>
+</div>
+<!-- Score Input Area -->
+<div class="flex items-center gap-4 shrink-0 bg-surface-bright p-3 rounded-lg border border-surface-variant">
+<input aria-label="Spain Score Prediction" class="w-16 h-16 text-center font-score-display text-score-display text-on-surface bg-surface-container-lowest border-2 border-outline-variant rounded-lg focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all placeholder:text-outline-variant/30" max="15" min="0" placeholder="0" type="number"/>
+<span class="font-headline-md text-headline-md text-outline-variant px-2">-</span>
+<input aria-label="Morocco Score Prediction" class="w-16 h-16 text-center font-score-display text-score-display text-on-surface bg-surface-container-lowest border-2 border-outline-variant rounded-lg focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all placeholder:text-outline-variant/30" max="15" min="0" placeholder="0" type="number"/>
+</div>
+<!-- Team B -->
+<div class="flex flex-col md:flex-row items-center gap-4 flex-1 justify-start w-full">
+<div class="w-16 h-12 rounded overflow-hidden border border-surface-variant shadow-sm shrink-0">
+<img alt="Morocco Flag" class="w-full h-full object-cover" data-alt="The national flag of Morocco, deep red field with a green pentagram star, shown in high-definition clarity suitable for a sleek, light-mode sports application interface. Simple, clean, and vibrant." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyHDppRX-l5VyZ6lbyxDiDZtaGJYXeCzY6mcCE6Akcsu9tNGZnaIWbqpi-NGtb_W8sHyaIkMpcX50vYfPcBRqN9r9TJ4Gs4tuxPRCnW-mjq3-jTe7qeu1GucfdGNye_9TfdylP_6EJQyZ9EC_A6kCfsJdp7fdfgAv5kEzWz4WmFc7dfm44QWNLZJg8Ay0sqjQcph7FKl6PAlsWOJ1YB-13DQ_kiN9AIyetzlSuntV9O7ExlbwBaxa9xxRTjexSVoahEs8kHLpD24o"/>
+</div>
+<span class="font-headline-md text-headline-md text-on-surface text-center md:text-left w-full md:w-auto">Morocco</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (FAB) for Save -->
+<div class="fixed bottom-24 right-4 md:right-8 md:bottom-8 z-40">
+<button class="bg-primary text-on-primary shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 rounded-full px-6 py-4 flex items-center gap-3 font-headline-md text-headline-md">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">save</span>
+            Save Predictions
+        </button>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-high w-full mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-desktop py-8 max-w-[1200px] mx-auto gap-4 md:gap-0">
+<!-- Brand -->
+<div class="font-headline-md text-headline-md font-bold text-on-surface">
+                FIFA 2026
+            </div>
+<!-- Copyright -->
+<div class="text-on-surface-variant font-label-md text-label-md">
+                © 2026 FIFA World Cup Analytics. All rights reserved.
+            </div>
+<!-- Links -->
+<div class="flex gap-6">
+<a class="text-on-surface-variant font-label-md text-label-md hover:underline hover:text-primary transition-colors duration-200" href="#">Terms of Service</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:underline hover:text-primary transition-colors duration-200" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:underline hover:text-primary transition-colors duration-200" href="#">Contact Support</a>
+</div>
+</div>
+</footer>
+<script>
+        // Simple script to auto-select text in inputs on focus for better UX
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.select();
+            });
+            // Prevent scrolling from changing number value unintentionally
+            input.addEventListener('wheel', function(e) {
+                this.blur();
+            });
+        });
+    </script>
+</body></html>

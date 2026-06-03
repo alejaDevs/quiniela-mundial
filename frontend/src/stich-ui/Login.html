@@ -1,0 +1,182 @@
+<!DOCTYPE html><html lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Login - FIFA 2026 Analytics</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Montserrat:wght@700;800&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-surface-variant": "#42493e",
+                        "on-tertiary-fixed-variant": "#544600",
+                        "surface-tint": "#3b6934",
+                        "on-tertiary-container": "#4c3e00",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary-fixed": "#bcf0ae",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#705d00",
+                        "error": "#ba1a1a",
+                        "primary-container": "#2d5a27",
+                        "tertiary-container": "#c9a900",
+                        "primary": "#154212",
+                        "surface-container": "#edeeef",
+                        "on-tertiary-fixed": "#221b00",
+                        "on-primary-fixed": "#002201",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2e3132",
+                        "error-container": "#ffdad6",
+                        "outline": "#72796e",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "tertiary-fixed": "#ffe16d",
+                        "inverse-primary": "#a1d494",
+                        "on-primary-fixed-variant": "#23501e",
+                        "secondary-fixed-dim": "#9ecaff",
+                        "primary-fixed-dim": "#a1d494",
+                        "surface-bright": "#f8f9fa",
+                        "on-secondary-fixed": "#001d36",
+                        "outline-variant": "#c2c9bb",
+                        "surface-container-low": "#f3f4f5",
+                        "on-secondary-fixed-variant": "#00497d",
+                        "surface-container-high": "#e7e8e9",
+                        "tertiary-fixed-dim": "#e9c400",
+                        "on-primary-container": "#9dd090",
+                        "on-surface": "#191c1d",
+                        "surface-container-highest": "#e1e3e4",
+                        "secondary-fixed": "#d1e4ff",
+                        "surface-dim": "#d9dadb",
+                        "surface": "#f8f9fa",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "background": "#f8f9fa",
+                        "on-background": "#191c1d",
+                        "on-secondary-container": "#00355c",
+                        "secondary": "#0061a4",
+                        "secondary-container": "#33a0fd",
+                        "on-secondary": "#ffffff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "base": "8px",
+                        "gutter": "16px",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "40px",
+                        "card-padding": "12px 24px"
+                    },
+                    fontFamily: {
+                        "label-lg": ["Inter", "sans-serif"],
+                        "label-md": ["Inter", "sans-serif"],
+                        "headline-lg-mobile": ["Montserrat", "sans-serif"],
+                        "score-display": ["Montserrat", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "display-lg": ["Montserrat", "sans-serif"],
+                        "headline-lg": ["Montserrat", "sans-serif"],
+                        "headline-md": ["Montserrat", "sans-serif"],
+                        "body-lg": ["Inter", "sans-serif"]
+                    },
+                    fontSize: {
+                        "label-lg": ["14px", { lineHeight: "20px", letterSpacing: "0.05em", fontWeight: "600" }],
+                        "label-md": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+                        "headline-lg-mobile": ["24px", { lineHeight: "32px", fontWeight: "700" }],
+                        "score-display": ["36px", { lineHeight: "44px", fontWeight: "800" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                        "display-lg": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "800" }],
+                        "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "700" }],
+                        "headline-md": ["20px", { lineHeight: "28px", fontWeight: "700" }],
+                        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex items-center justify-center relative overflow-hidden antialiased">
+<!-- Subtle Sporty Green Atmospheric Background -->
+<div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vh] bg-[radial-gradient(ellipse_at_center,_var(--tw-colors-primary-container)_0%,_transparent_70%)] opacity-[0.08]"></div>
+<!-- Abstract Pitch Lines -->
+<div class="absolute top-0 left-0 w-full h-full opacity-5" style="background-image: linear-gradient(to right, var(--tw-colors-primary) 1px, transparent 1px), linear-gradient(to bottom, var(--tw-colors-primary) 1px, transparent 1px); background-size: 100px 100px;"></div>
+</div>
+<!-- Login Card -->
+<main class="relative z-10 w-full max-w-[420px] mx-margin-mobile">
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-surface-variant p-8 sm:p-10 flex flex-col items-center">
+<!-- Brand Element -->
+<div class="w-16 h-16 bg-primary-container/10 rounded-full flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">sports_soccer</span>
+</div>
+<!-- Headers -->
+<h1 class="font-headline-lg text-headline-lg text-primary text-center mb-2">FIFA 2026</h1>
+<p class="font-body-md text-body-md text-on-surface-variant text-center mb-8">
+                Ingresa para predecir los resultados.
+            </p>
+<!-- Form -->
+<form action="#" class="w-full" method="POST" onsubmit="event.preventDefault(); this.querySelector('button').classList.add('opacity-80', 'scale-[0.98]'); setTimeout(() =&gt; this.querySelector('button').classList.remove('opacity-80', 'scale-[0.98]'), 200);">
+<div class="mb-8">
+<label class="block font-label-lg text-label-lg text-on-surface mb-2 pl-1" for="username">
+                        Nombre de Usuario
+                    </label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">person</span>
+</span>
+<input class="w-full bg-surface py-3 pl-12 pr-4 rounded-lg border border-outline text-on-surface font-body-lg text-body-lg focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all placeholder:text-on-surface-variant/40" id="username" name="username" placeholder="Ej. AnalistaPro" required="" type="text">
+</div>
+</div><div class="mb-8">
+<label class="block font-label-lg text-label-lg text-on-surface mb-2 pl-1" for="password">
+                        Contraseña
+                    </label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+</span>
+<input class="w-full bg-surface py-3 pl-12 pr-4 rounded-lg border border-outline text-on-surface font-body-lg text-body-lg focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all placeholder:text-on-surface-variant/40" id="password" name="password" placeholder="••••••••" required="" type="password">
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary font-headline-md text-headline-md py-4 rounded-lg hover:bg-primary-container transition-all duration-200 flex justify-center items-center gap-2 group shadow-sm" type="submit">
+<span class="">Entrar</span>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform duration-200 text-[20px]" style="font-variation-settings: 'FILL' 1;">arrow_forward</span>
+</button>
+</form>
+<!-- Subtle Footer Link for Realism -->
+<div class="mt-6 text-center">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">
+                    ¿Necesitas ayuda?
+                </a>
+</div>
+</div>
+</main>
+
+
+</body></html>

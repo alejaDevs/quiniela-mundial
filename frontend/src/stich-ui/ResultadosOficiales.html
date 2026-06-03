@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Resultados Oficiales - 2026 World Cup Predictor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Montserrat:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#72796e",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-primary-container": "#9dd090",
+                        "secondary-container": "#33a0fd",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#00355c",
+                        "on-primary-fixed": "#002201",
+                        "on-tertiary-container": "#4c3e00",
+                        "tertiary": "#705d00",
+                        "primary-fixed-dim": "#a1d494",
+                        "on-tertiary-fixed": "#221b00",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "surface-tint": "#3b6934",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#00497d",
+                        "surface-container": "#edeeef",
+                        "on-background": "#191c1d",
+                        "surface-bright": "#f8f9fa",
+                        "primary": "#154212",
+                        "on-primary-fixed-variant": "#23501e",
+                        "primary-fixed": "#bcf0ae",
+                        "secondary": "#0061a4",
+                        "tertiary-fixed": "#ffe16d",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#42493e",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#2e3132",
+                        "tertiary-container": "#c9a900",
+                        "primary-container": "#2d5a27",
+                        "on-surface": "#191c1d",
+                        "inverse-on-surface": "#f0f1f2",
+                        "tertiary-fixed-dim": "#e9c400",
+                        "surface-dim": "#d9dadb",
+                        "outline-variant": "#c2c9bb",
+                        "on-tertiary-fixed-variant": "#544600",
+                        "on-secondary-fixed": "#001d36",
+                        "secondary-fixed-dim": "#9ecaff",
+                        "secondary-fixed": "#d1e4ff",
+                        "inverse-primary": "#a1d494",
+                        "surface": "#f8f9fa",
+                        "surface-container-high": "#e7e8e9",
+                        "surface-container-low": "#f3f4f5",
+                        "background": "#f8f9fa"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "base": "8px",
+                        "margin-mobile": "20px",
+                        "card-padding": "12px 24px",
+                        "margin-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "headline-md": ["Montserrat"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "display-lg": ["Montserrat"],
+                        "body-lg": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "score-display": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "score-display": ["36px", { "lineHeight": "44px", "fontWeight": "800" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #f8f9fa; }
+        .match-card {
+            transition: all 0.2s ease;
+        }
+        .match-card:hover {
+            border-color: #154212;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .predictions-expand {
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .predictions-expand.active {
+            max-height: 500px;
+            opacity: 1;
+        }
+        .expand-icon {
+            transition: transform 0.3s ease;
+        }
+        .expand-icon.active {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="text-on-background font-body-md antialiased min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-background border-b border-outline-variant w-full top-0 sticky z-50">
+<div class="flex justify-between items-center h-16 px-gutter max-w-[1200px] mx-auto">
+<div class="flex items-center gap-4">
+<span class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed uppercase tracking-tight hidden md:block">2026 World Cup Predictor</span>
+<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary uppercase tracking-tight md:hidden">2026 WCP</span>
+</div>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Matches</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Leaderboard</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Groups</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">My Predictions</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1" href="#">Resultados Oficiales</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="bg-primary text-on-primary px-4 py-2 rounded-full font-label-lg text-label-lg hover:bg-on-primary-fixed-variant transition-colors hidden md:block">Predict Now</button>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">notifications</span></button>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">account_circle</span></button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full max-w-[1200px] mx-auto px-margin-mobile md:px-margin-desktop py-8">
+<!-- Header Section -->
+<div class="flex items-center gap-4 mb-8">
+<img alt="Soccer ball icon" class="w-12 h-12 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkgi72_sGAVq6j6EjqS09-HEGDtyfVsm9x_dYGNy79pbQeOgXdMETpMFmhdbglF7Mh52t_o77MyxfJfGzW7ZaJIwgGIW_hZRJnFEx4z_zv4IGKocyOgrRcBvtmusN1UYiMGkROvzb3lku9Vw41dW3bHeMx_MBY9OgeIBP-d585Pq9LUNYAyhpfd0l0w5h1fiT_2NkP6Y8NI5w3qAWkGlvojAAfsH-Zi1R30nEUq5t37MN47AyzhViD4a8QsINZtMDWXEQKfHfO2KQ"/>
+<h1 class="font-display-lg text-display-lg text-on-background">Resultados Oficiales</h1>
+</div>
+<!-- Match Cards Container -->
+<div class="flex flex-col gap-6">
+<!-- Match Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-transparent match-card overflow-hidden">
+<div class="h-1 bg-primary w-full"></div>
+<div class="p-card-padding">
+<!-- Status Chip -->
+<div class="flex justify-center mb-4">
+<span class="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full font-label-md text-label-md">Finished • Group A</span>
+</div>
+<!-- Teams and Score -->
+<div class="flex justify-between items-center px-4 md:px-12">
+<!-- Team A -->
+<div class="flex flex-col items-center flex-1">
+<img alt="Mexico Flag" class="w-16 h-12 object-cover rounded shadow-sm mb-2" data-alt="A high-quality, flat, brightly lit image of the Mexico national flag, rectangular, clear colors green, white, red with central emblem, clean white background, minimalist sports aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMDeGd5XBG3pvfEz5SBx-WkN2OPuwbrzhBbdvL3fQVF-bnNIblSgFItsKiCRV7yZYX82Ma1YaVZhnC-zp-WbX1yjHI-1afKPalAyoAOgYxtTUQaOapM1K6WIT82q8L-xq5E0ps3vSHXdwfkQDPc0ANnrJx1C7b94s8YJ948mAtpvPd7YKwVW9bt_dAZB9OfGTMP7ez6PTg01stkGXwP7PMkz7ApKi8gaHObahhIdhmOdijBdif8zRyCTxR5u8xr34Y3YXv_Z6W2UA"/>
+<span class="font-headline-md text-headline-md text-on-background text-center">Mexico</span>
+</div>
+<!-- Score -->
+<div class="flex flex-col items-center justify-center flex-1">
+<div class="flex items-center gap-4 bg-surface-bright px-6 py-2 rounded-lg border border-outline-variant">
+<span class="font-score-display text-score-display text-on-background">2</span>
+<span class="font-headline-md text-headline-md text-outline-variant">-</span>
+<span class="font-score-display text-score-display text-on-background">0</span>
+</div>
+</div>
+<!-- Team B -->
+<div class="flex flex-col items-center flex-1">
+<img alt="Canada Flag" class="w-16 h-12 object-cover rounded shadow-sm mb-2" data-alt="A high-quality, flat, brightly lit image of the Canada national flag, rectangular, clear colors red and white with central maple leaf, clean white background, minimalist sports aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBX595km2N2OIkFu9ajwFAxx2cPVmwAjBqL5VjJoWr4a49ylwErsaflyRNc0s5xgTGEOOJnkGM_VxnbTxy727HDcU5-pLHgcOEEGu8fEwpDg6ppOtEJNK9TRVlDRw64suvyLtuTj6OnmNI6ZgirLh3-tg5RvN81Nud_zxq8Rh7MzDVoZi_4hCcUeHoY167Cs-bi2FUGIozVsKFI-kqqjcxMkhZ2qIiXBQzSVkV9tEdwVHINw4Wjwy8rSatPgvhq_wjikau8ukzWrc0"/>
+<span class="font-headline-md text-headline-md text-on-background text-center">Canada</span>
+</div>
+</div>
+<!-- Expand Predictions Action -->
+<div class="mt-6 flex justify-center border-t border-surface-container pt-4">
+<button class="flex items-center gap-2 text-primary font-label-lg text-label-lg hover:text-on-primary-fixed-variant transition-colors group" onclick="togglePredictions('pred1', 'icon1')">
+                            View Predictions
+                            <span class="material-symbols-outlined expand-icon group-hover:translate-y-1" id="icon1">expand_more</span>
+</button>
+</div>
+</div>
+<!-- Expanded Predictions State (Simulated) -->
+<div class="predictions-expand bg-surface-bright border-t border-surface-container" id="pred1">
+<div class="p-card-padding">
+<h3 class="font-label-lg text-label-lg text-on-surface-variant mb-4 uppercase tracking-wider">Top Predictions</h3>
+<div class="flex flex-col gap-2">
+<!-- Header Row -->
+<div class="grid grid-cols-3 gap-4 px-4 py-2 text-on-surface-variant font-label-md text-label-md border-b border-surface-container">
+<div>User Name</div>
+<div class="text-center">Predicted Score</div>
+<div class="text-right">Points Earned</div>
+</div>
+<!-- Data Rows -->
+<div class="grid grid-cols-3 gap-4 px-4 py-3 bg-surface-container-lowest rounded items-center">
+<div class="font-body-md text-body-md font-medium text-on-background">AlexTheAnalyst</div>
+<div class="text-center font-headline-md text-headline-md text-on-background">2 - 0</div>
+<div class="text-right font-label-lg text-label-lg text-primary font-bold">+10</div>
+</div>
+<div class="grid grid-cols-3 gap-4 px-4 py-3 bg-surface-bright rounded items-center">
+<div class="font-body-md text-body-md font-medium text-on-background">SoccerFan99</div>
+<div class="text-center font-headline-md text-headline-md text-on-background">2 - 1</div>
+<div class="text-right font-label-lg text-label-lg text-outline">+5</div>
+</div>
+<div class="grid grid-cols-3 gap-4 px-4 py-3 bg-surface-container-lowest rounded items-center">
+<div class="font-body-md text-body-md font-medium text-on-background">PitchMaster</div>
+<div class="text-center font-headline-md text-headline-md text-on-background">1 - 0</div>
+<div class="text-right font-label-lg text-label-lg text-outline">+5</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Match Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-transparent match-card overflow-hidden">
+<div class="p-card-padding">
+<!-- Status Chip -->
+<div class="flex justify-center mb-4">
+<span class="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full font-label-md text-label-md">Finished • Group B</span>
+</div>
+<!-- Teams and Score -->
+<div class="flex justify-between items-center px-4 md:px-12">
+<!-- Team A -->
+<div class="flex flex-col items-center flex-1">
+<img alt="Brazil Flag" class="w-16 h-12 object-cover rounded shadow-sm mb-2" data-alt="A high-quality, flat, brightly lit image of the Brazil national flag, rectangular, clear colors green, yellow, blue, clean white background, minimalist sports aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkkZ3FU_4CKW21s8B1CL_GtuOjJ51ixs7p7rWd3jqS4qf5JpmZtCDQxdQtfG83-cpU7h2YPmcXAyc4G57mfz7izgs_ULgrkSeD7-M8qSjZEUVq7vtrUa048xGFPwLO5Kq72nLPZVLMR98CPU2eRMo_AfhotBd3OlAamH8e9yvdiAE7cA7CSDf1tsvaXFaLYHYMM4ybOql8VW3wVah4V2u-Eua3lfILGnbK6BleKF8rrMxASTR4xVmthFUAXpeAM8aPpvX7nhPb29I"/>
+<span class="font-headline-md text-headline-md text-on-background text-center">Brazil</span>
+</div>
+<!-- Score -->
+<div class="flex flex-col items-center justify-center flex-1">
+<div class="flex items-center gap-4 bg-surface-bright px-6 py-2 rounded-lg border border-outline-variant">
+<span class="font-score-display text-score-display text-on-background">3</span>
+<span class="font-headline-md text-headline-md text-outline-variant">-</span>
+<span class="font-score-display text-score-display text-on-background">1</span>
+</div>
+</div>
+<!-- Team B -->
+<div class="flex flex-col items-center flex-1">
+<img alt="Japan Flag" class="w-16 h-12 object-cover rounded shadow-sm mb-2" data-alt="A high-quality, flat, brightly lit image of the Japan national flag, rectangular, clear red circle on white background, minimalist sports aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_f_P8lfaoWk-utYCQMJt9wfZ8kpSBABFI2JUrtUgBOuAN85osD8hqrdLbPvQbSm_7GRNea12wjgvu7ptEEX67zO40FvpaaNEhSD42C64_dLIa36HtreQ2BfF_grmWYTH_tD8YJ_A1GEN6oOpKip6bwWXAEOwyrqMwydQI4P3xYC55xryMAQeFjBZtfvoV57YPPzE2SSs7yYkE90oFo9FzZOqp1WU36YDEVfrwlmLv-DD4TkVWenwqcZcF8FD4AdMmNSPrC8Bcifc"/>
+<span class="font-headline-md text-headline-md text-on-background text-center">Japan</span>
+</div>
+</div>
+<!-- Expand Predictions Action -->
+<div class="mt-6 flex justify-center border-t border-surface-container pt-4">
+<button class="flex items-center gap-2 text-primary font-label-lg text-label-lg hover:text-on-primary-fixed-variant transition-colors group" onclick="togglePredictions('pred2', 'icon2')">
+                            View Predictions
+                            <span class="material-symbols-outlined expand-icon group-hover:translate-y-1" id="icon2">expand_more</span>
+</button>
+</div>
+</div>
+<!-- Expanded Predictions State (Simulated) -->
+<div class="predictions-expand bg-surface-bright border-t border-surface-container" id="pred2">
+<div class="p-card-padding">
+<h3 class="font-label-lg text-label-lg text-on-surface-variant mb-4 uppercase tracking-wider">Top Predictions</h3>
+<div class="flex flex-col gap-2">
+<!-- Header Row -->
+<div class="grid grid-cols-3 gap-4 px-4 py-2 text-on-surface-variant font-label-md text-label-md border-b border-surface-container">
+<div>User Name</div>
+<div class="text-center">Predicted Score</div>
+<div class="text-right">Points Earned</div>
+</div>
+<div class="grid grid-cols-3 gap-4 px-4 py-3 bg-surface-container-lowest rounded items-center">
+<div class="font-body-md text-body-md font-medium text-on-background">SambaKing</div>
+<div class="text-center font-headline-md text-headline-md text-on-background">3 - 1</div>
+<div class="text-right font-label-lg text-label-lg text-primary font-bold">+10</div>
+</div>
+<div class="grid grid-cols-3 gap-4 px-4 py-3 bg-surface-bright rounded items-center">
+<div class="font-body-md text-body-md font-medium text-on-background">TacticsPro</div>
+<div class="text-center font-headline-md text-headline-md text-on-background">2 - 0</div>
+<div class="text-right font-label-lg text-label-lg text-outline">+2</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden bg-surface dark:bg-surface-container-lowest shadow-[0_-4px_20px_rgba(0,0,0,0.04)] fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-highest px-4 py-1 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">calendar_month</span>
+<span class="font-label-md-mobile text-label-md-mobile">Matches</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-highest px-4 py-1 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">groups</span>
+<span class="font-label-md-mobile text-label-md-mobile">Social</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1" href="#">
+<span class="material-symbols-outlined mb-1">query_stats</span>
+<span class="font-label-md-mobile text-label-md-mobile">Stats</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-highest px-4 py-1 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">person</span>
+<span class="font-label-md-mobile text-label-md-mobile">Profile</span>
+</a>
+</nav>
+<script>
+        function togglePredictions(predId, iconId) {
+            const predElement = document.getElementById(predId);
+            const iconElement = document.getElementById(iconId);
+            predElement.classList.toggle('active');
+            iconElement.classList.toggle('active');
+            
+            // Change icon
+            if(iconElement.classList.contains('active')) {
+                iconElement.innerText = 'expand_less';
+            } else {
+                iconElement.innerText = 'expand_more';
+            }
+        }
+    </script>
+</body></html>
