@@ -39,62 +39,11 @@ interface IToast {
   ok: boolean;
 }
 
-type ResultsFilter = "all" | "finished" | "today" | "week";
-
-interface IFilterOption {
-  value: ResultsFilter;
-  label: string;
-}
-
-const FILTER_OPTIONS: IFilterOption[] = [
-  { value: "all", label: "Todos" },
-  { value: "today", label: "Hoy" },
-  { value: "week", label: "Esta semana" },
-  { value: "finished", label: "Finalizados" },
-];
-
 const getAvailableGroups = (matches: IMatch[]): string[] => {
   const groups = matches
     .map((m: IMatch) => m.groupLabel)
     .filter((g): g is string => g !== null && g !== undefined);
   return [...new Set(groups)].sort();
-};
-
-const isSameDay = (a: Date, b: Date): boolean =>
-  a.getFullYear() === b.getFullYear() &&
-  a.getMonth() === b.getMonth() &&
-  a.getDate() === b.getDate();
-
-const isSameWeek = (date: Date, ref: Date): boolean => {
-  const dayOfWeek: number = ref.getDay();
-  const diffToMonday: number = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-  const weekStart: Date = new Date(ref);
-  weekStart.setDate(ref.getDate() + diffToMonday);
-  weekStart.setHours(0, 0, 0, 0);
-  const weekEnd: Date = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 7);
-  return date >= weekStart && date < weekEnd;
-};
-
-const applyTimeFilter = (
-  matches: IMatch[],
-  filter: ResultsFilter,
-): IMatch[] => {
-  const now: Date = new Date();
-  switch (filter) {
-    case "finished":
-      return matches.filter((m: IMatch): boolean => m.isFinished);
-    case "today":
-      return matches.filter((m: IMatch): boolean =>
-        isSameDay(new Date(m.kickoffDate), now),
-      );
-    case "week":
-      return matches.filter((m: IMatch): boolean =>
-        isSameWeek(new Date(m.kickoffDate), now),
-      );
-    default:
-      return matches;
-  }
 };
 
 const titleStyle = (isMobile: boolean): CSSProperties => ({
@@ -169,13 +118,6 @@ const toastStyle = (ok: boolean): CSSProperties => ({
   color: ok ? Theme.Colors.primary : Theme.Colors.onErrorContainer,
 });
 
-const filterBarStyle: CSSProperties = {
-  display: "flex",
-  flexWrap: "wrap",
-  gap: Theme.Spacing.sm,
-  marginBottom: Theme.Spacing.sm,
-};
-
 const groupFilterBarStyle: CSSProperties = {
   display: "flex",
   flexWrap: "wrap",
@@ -232,7 +174,6 @@ export const MisPredicciones = (): ReactElement => {
   const [toastByMatchId, setToastByMatchId] = useState<Map<string, IToast>>(
     new Map(),
   );
-  const [filter, setFilter] = useState<ResultsFilter>("all");
   const [groupFilter, setGroupFilter] = useState<string | null>(null);
 
   const loadData = useCallback(async (): Promise<void> => {
@@ -367,11 +308,9 @@ export const MisPredicciones = (): ReactElement => {
 
   const availableGroups: string[] = getAvailableGroups(matchesWithPrediction);
 
-  const filteredByGroup: IMatch[] = groupFilter
+  const visibleMatches: IMatch[] = groupFilter
     ? matchesWithPrediction.filter((m: IMatch) => m.groupLabel === groupFilter)
     : matchesWithPrediction;
-
-  const visibleMatches: IMatch[] = applyTimeFilter(filteredByGroup, filter);
 
   return (
     <>
@@ -380,21 +319,6 @@ export const MisPredicciones = (): ReactElement => {
         Revisa y edita tus pronósticos. Los partidos que ya iniciaron están
         bloqueados.
       </p>
-
-      <div style={filterBarStyle}>
-        {FILTER_OPTIONS.map(
-          (opt: IFilterOption): ReactElement => (
-            <button
-              key={opt.value}
-              type="button"
-              style={chipStyle(filter === opt.value)}
-              onClick={(): void => setFilter(opt.value)}
-            >
-              {opt.label}
-            </button>
-          ),
-        )}
-      </div>
 
       {availableGroups.length > 0 && (
         <div style={groupFilterBarStyle}>
@@ -426,7 +350,7 @@ export const MisPredicciones = (): ReactElement => {
       ) : matchesWithPrediction.length === 0 ? (
         <div style={emptyStyle}>Todavía no has registrado predicciones.</div>
       ) : visibleMatches.length === 0 ? (
-        <div style={emptyStyle}>No hay partidos para este filtro.</div>
+        <div style={emptyStyle}>No tienes predicciones en este grupo.</div>
       ) : (
         <div style={listStyle}>
           {visibleMatches.map((match: IMatch): ReactElement => {

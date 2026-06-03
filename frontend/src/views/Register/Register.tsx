@@ -173,12 +173,27 @@ const errorStyle: CSSProperties = {
   textAlign: "center",
 };
 
+const eyeButtonStyle: CSSProperties = {
+  position: "absolute",
+  right: Theme.Spacing.md,
+  top: "50%",
+  transform: "translateY(-50%)",
+  background: "none",
+  border: "none",
+  padding: 0,
+  cursor: "pointer",
+  color: Theme.Colors.outline,
+  display: "flex",
+  alignItems: "center",
+};
+
 export const Register = (): ReactElement => {
   const { user, register } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState<string>("");
   const [displayName, setDisplayName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
 
@@ -287,7 +302,7 @@ export const Register = (): ReactElement => {
                 </span>
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   placeholder="••••••••"
                   required
@@ -295,8 +310,21 @@ export const Register = (): ReactElement => {
                   onChange={(e: ChangeEvent<HTMLInputElement>): void =>
                     setPassword(e.target.value)
                   }
-                  style={inputStyle}
+                  style={{ ...inputStyle, paddingRight: "44px" }}
                 />
+                <button
+                  type="button"
+                  onClick={(): void => setShowPassword((prev) => !prev)}
+                  style={eyeButtonStyle}
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                >
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontSize: "20px" }}
+                  >
+                    {showPassword ? "visibility_off" : "visibility"}
+                  </span>
+                </button>
               </div>
             </div>
 

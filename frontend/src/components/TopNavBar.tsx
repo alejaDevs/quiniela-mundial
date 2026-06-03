@@ -278,7 +278,7 @@ export const TopNavBar = (): ReactElement => {
 
           {user !== null ? (
             <div style={drawerFooterStyle}>
-              <span>{user.displayName}</span>
+              <span>{user.username}</span>
               <button
                 type="button"
                 onClick={(): void => {
@@ -339,7 +339,7 @@ export const TopNavBar = (): ReactElement => {
               </nav>
               <div style={actionsStyle}>
                 {user !== null ? (
-                  <span style={userNameStyle}>{user.displayName}</span>
+                  <span style={userNameStyle}>{user.username}</span>
                 ) : null}
                 <Link
                   to="/cambiar-contrasena"
