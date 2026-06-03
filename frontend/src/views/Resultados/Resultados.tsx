@@ -3,16 +3,16 @@ import {
   CSSProperties,
   useEffect,
   useState,
-  useCallback
-} from 'react';
-import { Theme } from '../../Theme';
-import { useIsMobile } from '../../utils/UseIsMobile';
-import { IMatch } from '../../types/Index';
-import { apiGet } from '../../utils/ApiClient';
-import { adaptMatchListFromApi } from '../../adapters/MatchAdapter';
-import { ResultCard } from '../../components/ResultCard';
+  useCallback,
+} from "react";
+import { Theme } from "../../Theme";
+import { useIsMobile } from "../../utils/UseIsMobile";
+import { IMatch } from "../../types/Index";
+import { apiGet } from "../../utils/ApiClient";
+import { adaptMatchListFromApi } from "../../adapters/MatchAdapter";
+import { ResultCard } from "../../components/ResultCard";
 
-type ResultsFilter = 'all' | 'finished' | 'today' | 'week';
+type ResultsFilter = "all" | "finished" | "today" | "week";
 
 interface IFilterOption {
   value: ResultsFilter;
@@ -24,10 +24,10 @@ interface IMatchesResponse {
 }
 
 const FILTER_OPTIONS: IFilterOption[] = [
-  { value: 'all', label: 'Todos' },
-  { value: 'today', label: 'Hoy' },
-  { value: 'week', label: 'Esta semana' },
-  { value: 'finished', label: 'Finalizados' }
+  { value: "all", label: "Todos" },
+  { value: "today", label: "Hoy" },
+  { value: "week", label: "Esta semana" },
+  { value: "finished", label: "Finalizados" },
 ];
 
 const getAvailableGroups = (matches: IMatch[]): string[] => {
@@ -56,15 +56,15 @@ const isSameWeek = (date: Date, ref: Date): boolean => {
 const applyFilter = (matches: IMatch[], filter: ResultsFilter): IMatch[] => {
   const now: Date = new Date();
   switch (filter) {
-    case 'finished':
+    case "finished":
       return matches.filter((m: IMatch): boolean => m.isFinished);
-    case 'today':
+    case "today":
       return matches.filter((m: IMatch): boolean =>
-        isSameDay(new Date(m.kickoffDate), now)
+        isSameDay(new Date(m.kickoffDate), now),
       );
-    case 'week':
+    case "week":
       return matches.filter((m: IMatch): boolean =>
-        isSameWeek(new Date(m.kickoffDate), now)
+        isSameWeek(new Date(m.kickoffDate), now),
       );
     default:
       return matches;
@@ -72,10 +72,10 @@ const applyFilter = (matches: IMatch[], filter: ResultsFilter): IMatch[] => {
 };
 
 const headerRowStyle: CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
+  display: "flex",
+  alignItems: "center",
   gap: Theme.Spacing.md,
-  marginBottom: Theme.Spacing.xl
+  marginBottom: Theme.Spacing.xl,
 };
 
 const titleStyle = (isMobile: boolean): CSSProperties => ({
@@ -89,37 +89,37 @@ const titleStyle = (isMobile: boolean): CSSProperties => ({
   letterSpacing: Theme.Typography.displayLg.letterSpacing,
   fontWeight: Theme.Typography.displayLg.fontWeight,
   color: Theme.Colors.onBackground,
-  margin: 0
+  margin: 0,
 });
 
 const filterBarStyle: CSSProperties = {
-  display: 'flex',
-  flexWrap: 'wrap',
+  display: "flex",
+  flexWrap: "wrap",
   gap: Theme.Spacing.sm,
-  marginBottom: Theme.Spacing.sm
+  marginBottom: Theme.Spacing.sm,
 };
 
 const groupFilterBarStyle: CSSProperties = {
-  display: 'flex',
-  flexWrap: 'wrap',
+  display: "flex",
+  flexWrap: "wrap",
   gap: Theme.Spacing.sm,
-  marginBottom: Theme.Spacing.lg
+  marginBottom: Theme.Spacing.lg,
 };
 
 const filterLabelStyle: CSSProperties = {
   fontFamily: Theme.Typography.fontFamilyBody,
-  fontSize: Theme.Typography.labelSm?.fontSize ?? '11px',
+  fontSize: "11px",
   fontWeight: 600,
-  letterSpacing: '0.08em',
-  textTransform: 'uppercase',
+  letterSpacing: "0.08em",
+  textTransform: "uppercase",
   color: Theme.Colors.onSurfaceVariant,
-  alignSelf: 'center',
-  marginRight: Theme.Spacing.xs
+  alignSelf: "center",
+  marginRight: Theme.Spacing.xs,
 };
 
 const chipStyle = (active: boolean): CSSProperties => ({
-  display: 'inline-flex',
-  alignItems: 'center',
+  display: "inline-flex",
+  alignItems: "center",
   padding: `${Theme.Spacing.xs} ${Theme.Spacing.md}`,
   borderRadius: Theme.Radii.full,
   fontFamily: Theme.Typography.fontFamilyBody,
@@ -130,15 +130,15 @@ const chipStyle = (active: boolean): CSSProperties => ({
     ? Theme.Colors.primary
     : Theme.Colors.surfaceContainer,
   color: active ? Theme.Colors.onPrimary : Theme.Colors.onSurfaceVariant,
-  cursor: 'pointer',
-  border: 'none',
-  transition: 'background-color 0.15s, color 0.15s'
+  cursor: "pointer",
+  border: "none",
+  transition: "background-color 0.15s, color 0.15s",
 });
 
 const listStyle: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: Theme.Spacing.lg
+  display: "flex",
+  flexDirection: "column",
+  gap: Theme.Spacing.lg,
 };
 
 const emptyStyle: CSSProperties = {
@@ -146,22 +146,21 @@ const emptyStyle: CSSProperties = {
   fontSize: Theme.Typography.bodyMd.fontSize,
   color: Theme.Colors.onSurfaceVariant,
   padding: Theme.Spacing.lg,
-  textAlign: 'center'
+  textAlign: "center",
 };
 
 export const Resultados = (): ReactElement => {
   const isMobile = useIsMobile();
   const [matches, setMatches] = useState<IMatch[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [filter, setFilter] = useState<ResultsFilter>('all');
+  const [filter, setFilter] = useState<ResultsFilter>("all");
   const [groupFilter, setGroupFilter] = useState<string | null>(null);
 
   const load = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
-      const response: IMatchesResponse = await apiGet<IMatchesResponse>(
-        '/api/matches'
-      );
+      const response: IMatchesResponse =
+        await apiGet<IMatchesResponse>("/api/matches");
       setMatches(adaptMatchListFromApi(response.matches));
     } finally {
       setLoading(false);
@@ -180,7 +179,7 @@ export const Resultados = (): ReactElement => {
       return (
         new Date(a.kickoffDate).getTime() - new Date(b.kickoffDate).getTime()
       );
-    }
+    },
   );
 
   const availableGroups: string[] = getAvailableGroups(matches);
@@ -198,8 +197,8 @@ export const Resultados = (): ReactElement => {
           className="material-symbols-outlined"
           style={{
             color: Theme.Colors.primary,
-            fontSize: isMobile ? '32px' : '48px',
-            fontVariationSettings: "'FILL' 1"
+            fontSize: isMobile ? "32px" : "48px",
+            fontVariationSettings: "'FILL' 1",
           }}
         >
           sports_soccer
@@ -218,7 +217,7 @@ export const Resultados = (): ReactElement => {
             >
               {opt.label}
             </button>
-          )
+          ),
         )}
       </div>
 
@@ -242,7 +241,7 @@ export const Resultados = (): ReactElement => {
               >
                 {group}
               </button>
-            )
+            ),
           )}
         </div>
       )}
@@ -252,15 +251,15 @@ export const Resultados = (): ReactElement => {
       ) : visibleMatches.length === 0 ? (
         <div style={emptyStyle}>
           {matches.length === 0
-            ? 'Aún no hay partidos cargados.'
-            : 'No hay partidos para este filtro.'}
+            ? "Aún no hay partidos cargados."
+            : "No hay partidos para este filtro."}
         </div>
       ) : (
         <div style={listStyle}>
           {visibleMatches.map(
             (match: IMatch): ReactElement => (
               <ResultCard key={match.id} match={match} />
-            )
+            ),
           )}
         </div>
       )}

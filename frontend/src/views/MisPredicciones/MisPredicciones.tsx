@@ -3,19 +3,19 @@ import {
   CSSProperties,
   useEffect,
   useState,
-  useCallback
-} from 'react';
-import { Theme } from '../../Theme';
-import { useIsMobile } from '../../utils/UseIsMobile';
-import { IMatch, IPrediction } from '../../types/Index';
-import { apiGet, apiPost } from '../../utils/ApiClient';
-import { adaptMatchListFromApi } from '../../adapters/MatchAdapter';
+  useCallback,
+} from "react";
+import { Theme } from "../../Theme";
+import { useIsMobile } from "../../utils/UseIsMobile";
+import { IMatch, IPrediction } from "../../types/Index";
+import { apiGet, apiPost } from "../../utils/ApiClient";
+import { adaptMatchListFromApi } from "../../adapters/MatchAdapter";
 import {
   adaptPredictionFromApi,
-  adaptPredictionListFromApi
-} from '../../adapters/PredictionAdapter';
-import { MatchCard } from '../../components/MatchCard';
-import { isMatchLocked } from '../../utils/MatchLock';
+  adaptPredictionListFromApi,
+} from "../../adapters/PredictionAdapter";
+import { MatchCard } from "../../components/MatchCard";
+import { isMatchLocked } from "../../utils/MatchLock";
 
 interface IMatchesResponse {
   matches: unknown;
@@ -39,7 +39,7 @@ interface IToast {
   ok: boolean;
 }
 
-type ResultsFilter = 'all' | 'finished' | 'today' | 'week';
+type ResultsFilter = "all" | "finished" | "today" | "week";
 
 interface IFilterOption {
   value: ResultsFilter;
@@ -47,10 +47,10 @@ interface IFilterOption {
 }
 
 const FILTER_OPTIONS: IFilterOption[] = [
-  { value: 'all', label: 'Todos' },
-  { value: 'today', label: 'Hoy' },
-  { value: 'week', label: 'Esta semana' },
-  { value: 'finished', label: 'Finalizados' }
+  { value: "all", label: "Todos" },
+  { value: "today", label: "Hoy" },
+  { value: "week", label: "Esta semana" },
+  { value: "finished", label: "Finalizados" },
 ];
 
 const getAvailableGroups = (matches: IMatch[]): string[] => {
@@ -76,18 +76,21 @@ const isSameWeek = (date: Date, ref: Date): boolean => {
   return date >= weekStart && date < weekEnd;
 };
 
-const applyTimeFilter = (matches: IMatch[], filter: ResultsFilter): IMatch[] => {
+const applyTimeFilter = (
+  matches: IMatch[],
+  filter: ResultsFilter,
+): IMatch[] => {
   const now: Date = new Date();
   switch (filter) {
-    case 'finished':
+    case "finished":
       return matches.filter((m: IMatch): boolean => m.isFinished);
-    case 'today':
+    case "today":
       return matches.filter((m: IMatch): boolean =>
-        isSameDay(new Date(m.kickoffDate), now)
+        isSameDay(new Date(m.kickoffDate), now),
       );
-    case 'week':
+    case "week":
       return matches.filter((m: IMatch): boolean =>
-        isSameWeek(new Date(m.kickoffDate), now)
+        isSameWeek(new Date(m.kickoffDate), now),
       );
     default:
       return matches;
@@ -106,7 +109,7 @@ const titleStyle = (isMobile: boolean): CSSProperties => ({
   fontWeight: Theme.Typography.displayLg.fontWeight,
   color: Theme.Colors.onSurface,
   margin: 0,
-  marginBottom: Theme.Spacing.sm
+  marginBottom: Theme.Spacing.sm,
 });
 
 const subtitleStyle: CSSProperties = {
@@ -114,32 +117,32 @@ const subtitleStyle: CSSProperties = {
   fontSize: Theme.Typography.bodyLg.fontSize,
   color: Theme.Colors.onSurfaceVariant,
   marginTop: 0,
-  marginBottom: Theme.Spacing.xl
+  marginBottom: Theme.Spacing.xl,
 };
 
 const listStyle: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: Theme.Spacing.md
+  display: "flex",
+  flexDirection: "column",
+  gap: Theme.Spacing.md,
 };
 
 const matchWrapperStyle: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: Theme.Spacing.sm
+  display: "flex",
+  flexDirection: "column",
+  gap: Theme.Spacing.sm,
 };
 
 const matchActionRowStyle: CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'flex-end',
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
   gap: Theme.Spacing.md,
-  paddingRight: Theme.Spacing.xs
+  paddingRight: Theme.Spacing.xs,
 };
 
 const saveButtonStyle = (disabled: boolean): CSSProperties => ({
-  display: 'inline-flex',
-  alignItems: 'center',
+  display: "inline-flex",
+  alignItems: "center",
   gap: Theme.Spacing.sm,
   backgroundColor: Theme.Colors.primary,
   color: Theme.Colors.onPrimary,
@@ -150,12 +153,12 @@ const saveButtonStyle = (disabled: boolean): CSSProperties => ({
   padding: `${Theme.Spacing.sm} ${Theme.Spacing.lg}`,
   borderRadius: Theme.Radii.md,
   opacity: disabled ? 0.5 : 1,
-  cursor: disabled ? 'default' : 'pointer'
+  cursor: disabled ? "default" : "pointer",
 });
 
 const toastStyle = (ok: boolean): CSSProperties => ({
-  display: 'inline-flex',
-  alignItems: 'center',
+  display: "inline-flex",
+  alignItems: "center",
   gap: Theme.Spacing.xs,
   padding: `${Theme.Spacing.xs} ${Theme.Spacing.md}`,
   borderRadius: Theme.Radii.full,
@@ -163,26 +166,26 @@ const toastStyle = (ok: boolean): CSSProperties => ({
   fontSize: Theme.Typography.labelMd.fontSize,
   fontWeight: Theme.Typography.labelMd.fontWeight,
   backgroundColor: ok ? Theme.Colors.primaryFixed : Theme.Colors.errorContainer,
-  color: ok ? Theme.Colors.primary : Theme.Colors.onErrorContainer
+  color: ok ? Theme.Colors.primary : Theme.Colors.onErrorContainer,
 });
 
 const filterBarStyle: CSSProperties = {
-  display: 'flex',
-  flexWrap: 'wrap',
+  display: "flex",
+  flexWrap: "wrap",
   gap: Theme.Spacing.sm,
-  marginBottom: Theme.Spacing.sm
+  marginBottom: Theme.Spacing.sm,
 };
 
 const groupFilterBarStyle: CSSProperties = {
-  display: 'flex',
-  flexWrap: 'wrap',
+  display: "flex",
+  flexWrap: "wrap",
   gap: Theme.Spacing.sm,
-  marginBottom: Theme.Spacing.lg
+  marginBottom: Theme.Spacing.lg,
 };
 
 const chipStyle = (active: boolean): CSSProperties => ({
-  display: 'inline-flex',
-  alignItems: 'center',
+  display: "inline-flex",
+  alignItems: "center",
   padding: `${Theme.Spacing.xs} ${Theme.Spacing.md}`,
   borderRadius: Theme.Radii.full,
   fontFamily: Theme.Typography.fontFamilyBody,
@@ -193,20 +196,20 @@ const chipStyle = (active: boolean): CSSProperties => ({
     ? Theme.Colors.primary
     : Theme.Colors.surfaceContainer,
   color: active ? Theme.Colors.onPrimary : Theme.Colors.onSurfaceVariant,
-  cursor: 'pointer',
-  border: 'none',
-  transition: 'background-color 0.15s, color 0.15s'
+  cursor: "pointer",
+  border: "none",
+  transition: "background-color 0.15s, color 0.15s",
 });
 
 const filterLabelStyle: CSSProperties = {
   fontFamily: Theme.Typography.fontFamilyBody,
-  fontSize: Theme.Typography.labelSm?.fontSize ?? '11px',
+  fontSize: "11px",
   fontWeight: 600,
-  letterSpacing: '0.08em',
-  textTransform: 'uppercase',
+  letterSpacing: "0.08em",
+  textTransform: "uppercase",
   color: Theme.Colors.onSurfaceVariant,
-  alignSelf: 'center',
-  marginRight: Theme.Spacing.xs
+  alignSelf: "center",
+  marginRight: Theme.Spacing.xs,
 };
 
 const emptyStyle: CSSProperties = {
@@ -214,7 +217,7 @@ const emptyStyle: CSSProperties = {
   fontSize: Theme.Typography.bodyMd.fontSize,
   color: Theme.Colors.onSurfaceVariant,
   padding: Theme.Spacing.lg,
-  textAlign: 'center'
+  textAlign: "center",
 };
 
 export const MisPredicciones = (): ReactElement => {
@@ -227,23 +230,24 @@ export const MisPredicciones = (): ReactElement => {
   const [loading, setLoading] = useState<boolean>(true);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [toastByMatchId, setToastByMatchId] = useState<Map<string, IToast>>(
-    new Map()
+    new Map(),
   );
-  const [filter, setFilter] = useState<ResultsFilter>('all');
+  const [filter, setFilter] = useState<ResultsFilter>("all");
   const [groupFilter, setGroupFilter] = useState<string | null>(null);
 
   const loadData = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
-      const matchesResponse: IMatchesResponse = await apiGet<IMatchesResponse>(
-        '/api/matches'
-      );
+      const matchesResponse: IMatchesResponse =
+        await apiGet<IMatchesResponse>("/api/matches");
       const predictionsResponse: IPredictionsResponse =
-        await apiGet<IPredictionsResponse>('/api/predictions/me');
+        await apiGet<IPredictionsResponse>("/api/predictions/me");
 
-      const matchList: IMatch[] = adaptMatchListFromApi(matchesResponse.matches);
+      const matchList: IMatch[] = adaptMatchListFromApi(
+        matchesResponse.matches,
+      );
       const predictionList: IPrediction[] = adaptPredictionListFromApi(
-        predictionsResponse.predictions
+        predictionsResponse.predictions,
       );
 
       const predictionsMap: Map<string, IPrediction> = new Map();
@@ -265,21 +269,22 @@ export const MisPredicciones = (): ReactElement => {
 
   const updateDraft = (
     matchId: string,
-    side: 'home' | 'away',
-    value: number
+    side: "home" | "away",
+    value: number,
   ): void => {
     setDrafts((prev: Map<string, IDraft>): Map<string, IDraft> => {
       const next: Map<string, IDraft> = new Map(prev);
       const existing: IDraft | undefined = next.get(matchId);
-      const baseline: IPrediction | undefined = predictionsByMatchId.get(matchId);
+      const baseline: IPrediction | undefined =
+        predictionsByMatchId.get(matchId);
       const home: number | null =
-        side === 'home'
+        side === "home"
           ? value
-          : existing?.homeScore ?? baseline?.predictedHomeScore ?? null;
+          : (existing?.homeScore ?? baseline?.predictedHomeScore ?? null);
       const away: number | null =
-        side === 'away'
+        side === "away"
           ? value
-          : existing?.awayScore ?? baseline?.predictedAwayScore ?? null;
+          : (existing?.awayScore ?? baseline?.predictedAwayScore ?? null);
       next.set(matchId, { homeScore: home, awayScore: away });
       return next;
     });
@@ -304,7 +309,7 @@ export const MisPredicciones = (): ReactElement => {
   const showToast = (matchId: string, message: string, ok: boolean): void => {
     setToastByMatchId(
       (prev: Map<string, IToast>): Map<string, IToast> =>
-        new Map(prev).set(matchId, { message, ok })
+        new Map(prev).set(matchId, { message, ok }),
     );
     setTimeout((): void => {
       setToastByMatchId((prev: Map<string, IToast>): Map<string, IToast> => {
@@ -327,37 +332,37 @@ export const MisPredicciones = (): ReactElement => {
     setSavingId(matchId);
     try {
       const response: IPredictionResponse = await apiPost<IPredictionResponse>(
-        '/api/predictions',
+        "/api/predictions",
         {
           matchId,
           predictedHomeScore: draft.homeScore,
-          predictedAwayScore: draft.awayScore
-        }
+          predictedAwayScore: draft.awayScore,
+        },
       );
       const saved: IPrediction = adaptPredictionFromApi(response.prediction);
       setPredictionsByMatchId(
         (prev: Map<string, IPrediction>): Map<string, IPrediction> =>
-          new Map(prev).set(saved.matchId, saved)
+          new Map(prev).set(saved.matchId, saved),
       );
       setDrafts((prev: Map<string, IDraft>): Map<string, IDraft> => {
         const next: Map<string, IDraft> = new Map(prev);
         next.delete(matchId);
         return next;
       });
-      showToast(matchId, 'Predicción actualizada', true);
+      showToast(matchId, "Predicción actualizada", true);
     } catch (err: unknown) {
       const message: string =
-        typeof err === 'object' && err !== null && 'message' in err
+        typeof err === "object" && err !== null && "message" in err
           ? String((err as { message: unknown }).message)
-          : 'Error al guardar';
+          : "Error al guardar";
       showToast(matchId, message, false);
     } finally {
       setSavingId(null);
     }
   };
 
-  const matchesWithPrediction: IMatch[] = matches.filter(
-    (m: IMatch): boolean => predictionsByMatchId.has(m.id)
+  const matchesWithPrediction: IMatch[] = matches.filter((m: IMatch): boolean =>
+    predictionsByMatchId.has(m.id),
   );
 
   const availableGroups: string[] = getAvailableGroups(matchesWithPrediction);
@@ -387,7 +392,7 @@ export const MisPredicciones = (): ReactElement => {
             >
               {opt.label}
             </button>
-          )
+          ),
         )}
       </div>
 
@@ -411,7 +416,7 @@ export const MisPredicciones = (): ReactElement => {
               >
                 {group}
               </button>
-            )
+            ),
           )}
         </div>
       )}
@@ -424,72 +429,76 @@ export const MisPredicciones = (): ReactElement => {
         <div style={emptyStyle}>No hay partidos para este filtro.</div>
       ) : (
         <div style={listStyle}>
-          {visibleMatches.map(
-            (match: IMatch): ReactElement => {
-              const locked: boolean = isMatchLocked(new Date(match.kickoffDate));
-              const draft: IDraft | undefined = drafts.get(match.id);
-              const hasDraft: boolean =
-                draft !== undefined &&
-                draft.homeScore !== null &&
-                draft.awayScore !== null;
-              const isSaving: boolean = savingId === match.id;
-              const toast: IToast | undefined = toastByMatchId.get(match.id);
+          {visibleMatches.map((match: IMatch): ReactElement => {
+            const locked: boolean = isMatchLocked(new Date(match.kickoffDate));
+            const draft: IDraft | undefined = drafts.get(match.id);
+            const hasDraft: boolean =
+              draft !== undefined &&
+              draft.homeScore !== null &&
+              draft.awayScore !== null;
+            const isSaving: boolean = savingId === match.id;
+            const toast: IToast | undefined = toastByMatchId.get(match.id);
 
-              return (
-                <div key={match.id} style={matchWrapperStyle}>
-                  <MatchCard
-                    match={match}
-                    predictedHomeScore={resolveHomeValue(match.id)}
-                    predictedAwayScore={resolveAwayValue(match.id)}
-                    variant={locked ? 'readonly' : 'editable'}
-                    onHomeScoreChange={
-                      locked
-                        ? undefined
-                        : (value: number): void =>
-                            updateDraft(match.id, 'home', value)
-                    }
-                    onAwayScoreChange={
-                      locked
-                        ? undefined
-                        : (value: number): void =>
-                            updateDraft(match.id, 'away', value)
-                    }
-                  />
-                  {!locked ? (
-                    <div style={matchActionRowStyle}>
-                      {toast !== undefined ? (
-                        <span style={toastStyle(toast.ok)}>
-                          <span
-                            className="material-symbols-outlined"
-                            style={{ fontSize: '14px', fontVariationSettings: "'FILL' 1" }}
-                          >
-                            {toast.ok ? 'check_circle' : 'error'}
-                          </span>
-                          {toast.message}
-                        </span>
-                      ) : null}
-                      <button
-                        type="button"
-                        disabled={isSaving || !hasDraft}
-                        onClick={(): void => {
-                          void handleSavePrediction(match.id);
-                        }}
-                        style={saveButtonStyle(isSaving || !hasDraft)}
-                      >
+            return (
+              <div key={match.id} style={matchWrapperStyle}>
+                <MatchCard
+                  match={match}
+                  predictedHomeScore={resolveHomeValue(match.id)}
+                  predictedAwayScore={resolveAwayValue(match.id)}
+                  variant={locked ? "readonly" : "editable"}
+                  onHomeScoreChange={
+                    locked
+                      ? undefined
+                      : (value: number): void =>
+                          updateDraft(match.id, "home", value)
+                  }
+                  onAwayScoreChange={
+                    locked
+                      ? undefined
+                      : (value: number): void =>
+                          updateDraft(match.id, "away", value)
+                  }
+                />
+                {!locked ? (
+                  <div style={matchActionRowStyle}>
+                    {toast !== undefined ? (
+                      <span style={toastStyle(toast.ok)}>
                         <span
                           className="material-symbols-outlined"
-                          style={{ fontSize: '18px', fontVariationSettings: "'FILL' 1" }}
+                          style={{
+                            fontSize: "14px",
+                            fontVariationSettings: "'FILL' 1",
+                          }}
                         >
-                          save
+                          {toast.ok ? "check_circle" : "error"}
                         </span>
-                        {isSaving ? 'Guardando…' : 'Guardar cambios'}
-                      </button>
-                    </div>
-                  ) : null}
-                </div>
-              );
-            }
-          )}
+                        {toast.message}
+                      </span>
+                    ) : null}
+                    <button
+                      type="button"
+                      disabled={isSaving || !hasDraft}
+                      onClick={(): void => {
+                        void handleSavePrediction(match.id);
+                      }}
+                      style={saveButtonStyle(isSaving || !hasDraft)}
+                    >
+                      <span
+                        className="material-symbols-outlined"
+                        style={{
+                          fontSize: "18px",
+                          fontVariationSettings: "'FILL' 1",
+                        }}
+                      >
+                        save
+                      </span>
+                      {isSaving ? "Guardando…" : "Guardar cambios"}
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
         </div>
       )}
     </>
