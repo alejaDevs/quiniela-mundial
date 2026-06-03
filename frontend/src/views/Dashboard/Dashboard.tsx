@@ -3,24 +3,27 @@ import {
   CSSProperties,
   useEffect,
   useState,
-  useCallback
-} from 'react';
-import { toast } from 'sonner';
-import { Theme } from '../../Theme';
-import { IMatch, IPrediction } from '../../types/Index';
-import { apiGet, apiPost } from '../../utils/ApiClient';
-import { adaptMatchListFromApi } from '../../adapters/MatchAdapter';
+  useCallback,
+} from "react";
+import { toast } from "sonner";
+import { Theme } from "../../Theme";
+import { IMatch, IPrediction } from "../../types/Index";
+import { apiGet, apiPost } from "../../utils/ApiClient";
+import { adaptMatchListFromApi } from "../../adapters/MatchAdapter";
 import {
   adaptPredictionFromApi,
-  adaptPredictionListFromApi
-} from '../../adapters/PredictionAdapter';
-import { MatchCard } from '../../components/MatchCard';
-import { isMatchLocked } from '../../utils/MatchLock';
-import { hasRecentResults, findDeadlineMatches } from '../../utils/RecentResultsEvaluator';
-import { useIsMobile } from '../../utils/UseIsMobile';
+  adaptPredictionListFromApi,
+} from "../../adapters/PredictionAdapter";
+import { MatchCard } from "../../components/MatchCard";
+import { isMatchLocked } from "../../utils/MatchLock";
+import {
+  hasRecentResults,
+  findDeadlineMatches,
+} from "../../utils/RecentResultsEvaluator";
+import { useIsMobile } from "../../utils/UseIsMobile";
 
-const RESULTS_NOTIFIED_KEY = 'quiniela2026.results_notified';
-const DEADLINE_NOTIFIED_KEY = 'quiniela2026.deadline_notified';
+const RESULTS_NOTIFIED_KEY = "quiniela2026.results_notified";
+const DEADLINE_NOTIFIED_KEY = "quiniela2026.deadline_notified";
 
 interface IMatchesResponse {
   matches: unknown;
@@ -39,9 +42,66 @@ interface IDraft {
   awayScore: number | null;
 }
 
+type ResultsFilter = "all" | "finished" | "today" | "week";
+
+interface IFilterOption {
+  value: ResultsFilter;
+  label: string;
+}
+
+const FILTER_OPTIONS: IFilterOption[] = [
+  { value: "all", label: "Todos" },
+  { value: "today", label: "Hoy" },
+  { value: "week", label: "Esta semana" },
+  { value: "finished", label: "Finalizados" },
+];
+
+const getAvailableGroups = (matches: IMatch[]): string[] => {
+  const groups = matches
+    .map((m: IMatch) => m.groupLabel)
+    .filter((g): g is string => g !== null && g !== undefined);
+  return [...new Set(groups)].sort();
+};
+
+const isSameDay = (a: Date, b: Date): boolean =>
+  a.getFullYear() === b.getFullYear() &&
+  a.getMonth() === b.getMonth() &&
+  a.getDate() === b.getDate();
+
+const isSameWeek = (date: Date, ref: Date): boolean => {
+  const dayOfWeek: number = ref.getDay();
+  const diffToMonday: number = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const weekStart: Date = new Date(ref);
+  weekStart.setDate(ref.getDate() + diffToMonday);
+  weekStart.setHours(0, 0, 0, 0);
+  const weekEnd: Date = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 7);
+  return date >= weekStart && date < weekEnd;
+};
+
+const applyTimeFilter = (
+  matches: IMatch[],
+  filter: ResultsFilter,
+): IMatch[] => {
+  const now: Date = new Date();
+  switch (filter) {
+    case "finished":
+      return matches.filter((m: IMatch): boolean => m.isFinished);
+    case "today":
+      return matches.filter((m: IMatch): boolean =>
+        isSameDay(new Date(m.kickoffDate), now),
+      );
+    case "week":
+      return matches.filter((m: IMatch): boolean =>
+        isSameWeek(new Date(m.kickoffDate), now),
+      );
+    default:
+      return matches;
+  }
+};
 
 const headerStyle = (isMobile: boolean): CSSProperties => ({
-  marginBottom: isMobile ? Theme.Spacing.lg : Theme.Spacing.xl
+  marginBottom: isMobile ? Theme.Spacing.lg : Theme.Spacing.xl,
 });
 
 const titleStyle = (isMobile: boolean): CSSProperties => ({
@@ -56,39 +116,39 @@ const titleStyle = (isMobile: boolean): CSSProperties => ({
   fontWeight: Theme.Typography.displayLg.fontWeight,
   color: Theme.Colors.onSurface,
   margin: 0,
-  marginBottom: Theme.Spacing.sm
+  marginBottom: Theme.Spacing.sm,
 });
 
 const subtitleStyle: CSSProperties = {
   fontFamily: Theme.Typography.fontFamilyBody,
   fontSize: Theme.Typography.bodyLg.fontSize,
   color: Theme.Colors.onSurfaceVariant,
-  margin: 0
+  margin: 0,
 };
 
 const listStyle: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: Theme.Spacing.md
+  display: "flex",
+  flexDirection: "column",
+  gap: Theme.Spacing.md,
 };
 
 const matchWrapperStyle: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: Theme.Spacing.sm
+  display: "flex",
+  flexDirection: "column",
+  gap: Theme.Spacing.sm,
 };
 
 const matchActionRowStyle: CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'flex-end',
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
   gap: Theme.Spacing.md,
-  paddingRight: Theme.Spacing.xs
+  paddingRight: Theme.Spacing.xs,
 };
 
 const saveButtonStyle = (disabled: boolean): CSSProperties => ({
-  display: 'inline-flex',
-  alignItems: 'center',
+  display: "inline-flex",
+  alignItems: "center",
   gap: Theme.Spacing.sm,
   backgroundColor: Theme.Colors.primary,
   color: Theme.Colors.onPrimary,
@@ -99,16 +159,58 @@ const saveButtonStyle = (disabled: boolean): CSSProperties => ({
   padding: `${Theme.Spacing.sm} ${Theme.Spacing.lg}`,
   borderRadius: Theme.Radii.md,
   opacity: disabled ? 0.5 : 1,
-  cursor: disabled ? 'default' : 'pointer'
+  cursor: disabled ? "default" : "pointer",
 });
 
+const filterBarStyle: CSSProperties = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: Theme.Spacing.sm,
+  marginBottom: Theme.Spacing.sm,
+};
+
+const groupFilterBarStyle: CSSProperties = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: Theme.Spacing.sm,
+  marginBottom: Theme.Spacing.lg,
+};
+
+const chipStyle = (active: boolean): CSSProperties => ({
+  display: "inline-flex",
+  alignItems: "center",
+  padding: `${Theme.Spacing.xs} ${Theme.Spacing.md}`,
+  borderRadius: Theme.Radii.full,
+  fontFamily: Theme.Typography.fontFamilyBody,
+  fontSize: Theme.Typography.labelLg.fontSize,
+  fontWeight: Theme.Typography.labelLg.fontWeight,
+  letterSpacing: Theme.Typography.labelLg.letterSpacing,
+  backgroundColor: active
+    ? Theme.Colors.primary
+    : Theme.Colors.surfaceContainer,
+  color: active ? Theme.Colors.onPrimary : Theme.Colors.onSurfaceVariant,
+  cursor: "pointer",
+  border: "none",
+  transition: "background-color 0.15s, color 0.15s",
+});
+
+const filterLabelStyle: CSSProperties = {
+  fontFamily: Theme.Typography.fontFamilyBody,
+  fontSize: "11px",
+  fontWeight: 600,
+  letterSpacing: "0.08em",
+  textTransform: "uppercase",
+  color: Theme.Colors.onSurfaceVariant,
+  alignSelf: "center",
+  marginRight: Theme.Spacing.xs,
+};
 
 const messageStyle: CSSProperties = {
   fontFamily: Theme.Typography.fontFamilyBody,
   fontSize: Theme.Typography.bodyMd.fontSize,
   color: Theme.Colors.onSurfaceVariant,
   padding: Theme.Spacing.lg,
-  textAlign: 'center'
+  textAlign: "center",
 };
 
 export const Dashboard = (): ReactElement => {
@@ -120,19 +222,22 @@ export const Dashboard = (): ReactElement => {
   const [drafts, setDrafts] = useState<Map<string, IDraft>>(new Map());
   const [loading, setLoading] = useState<boolean>(true);
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [filter, setFilter] = useState<ResultsFilter>("all");
+  const [groupFilter, setGroupFilter] = useState<string | null>(null);
 
   const loadData = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
-      const matchesResponse: IMatchesResponse = await apiGet<IMatchesResponse>(
-        '/api/matches'
-      );
+      const matchesResponse: IMatchesResponse =
+        await apiGet<IMatchesResponse>("/api/matches");
       const predictionsResponse: IPredictionsResponse =
-        await apiGet<IPredictionsResponse>('/api/predictions/me');
+        await apiGet<IPredictionsResponse>("/api/predictions/me");
 
-      const matchList: IMatch[] = adaptMatchListFromApi(matchesResponse.matches);
+      const matchList: IMatch[] = adaptMatchListFromApi(
+        matchesResponse.matches,
+      );
       const predictionList: IPrediction[] = adaptPredictionListFromApi(
-        predictionsResponse.predictions
+        predictionsResponse.predictions,
       );
 
       const predictionsMap: Map<string, IPrediction> = new Map();
@@ -148,21 +253,24 @@ export const Dashboard = (): ReactElement => {
         hasRecentResults(matchList) &&
         sessionStorage.getItem(RESULTS_NOTIFIED_KEY) === null
       ) {
-        sessionStorage.setItem(RESULTS_NOTIFIED_KEY, '1');
+        sessionStorage.setItem(RESULTS_NOTIFIED_KEY, "1");
         toast.success(
-          '¡Nuevos marcadores publicados! Revisa la tabla de posiciones.'
+          "¡Nuevos marcadores publicados! Revisa la tabla de posiciones.",
         );
       }
 
       const predictedIds: ReadonlySet<string> = new Set(
-        predictionList.map((p: IPrediction): string => p.matchId)
+        predictionList.map((p: IPrediction): string => p.matchId),
       );
-      const deadlineMatches: IMatch[] = findDeadlineMatches(matchList, predictedIds);
+      const deadlineMatches: IMatch[] = findDeadlineMatches(
+        matchList,
+        predictedIds,
+      );
       if (
         deadlineMatches.length > 0 &&
         sessionStorage.getItem(DEADLINE_NOTIFIED_KEY) === null
       ) {
-        sessionStorage.setItem(DEADLINE_NOTIFIED_KEY, '1');
+        sessionStorage.setItem(DEADLINE_NOTIFIED_KEY, "1");
         const message: string =
           deadlineMatches.length === 1
             ? `${deadlineMatches[0].homeTeam.name} vs ${deadlineMatches[0].awayTeam.name} cierra en menos de 24 h y aún no tienes predicción.`
@@ -180,21 +288,22 @@ export const Dashboard = (): ReactElement => {
 
   const updateDraft = (
     matchId: string,
-    side: 'home' | 'away',
-    value: number
+    side: "home" | "away",
+    value: number,
   ): void => {
     setDrafts((prev: Map<string, IDraft>): Map<string, IDraft> => {
       const next: Map<string, IDraft> = new Map(prev);
       const existing: IDraft | undefined = next.get(matchId);
-      const baseline: IPrediction | undefined = predictionsByMatchId.get(matchId);
+      const baseline: IPrediction | undefined =
+        predictionsByMatchId.get(matchId);
       const home: number | null =
-        side === 'home'
+        side === "home"
           ? value
-          : existing?.homeScore ?? baseline?.predictedHomeScore ?? null;
+          : (existing?.homeScore ?? baseline?.predictedHomeScore ?? null);
       const away: number | null =
-        side === 'away'
+        side === "away"
           ? value
-          : existing?.awayScore ?? baseline?.predictedAwayScore ?? null;
+          : (existing?.awayScore ?? baseline?.predictedAwayScore ?? null);
       next.set(matchId, { homeScore: home, awayScore: away });
       return next;
     });
@@ -216,7 +325,7 @@ export const Dashboard = (): ReactElement => {
     return predictionsByMatchId.get(matchId)?.predictedAwayScore ?? null;
   };
 
-const handleSaveMatch = async (match: IMatch): Promise<void> => {
+  const handleSaveMatch = async (match: IMatch): Promise<void> => {
     const draft: IDraft | undefined = drafts.get(match.id);
     if (
       draft === undefined ||
@@ -231,17 +340,17 @@ const handleSaveMatch = async (match: IMatch): Promise<void> => {
     setSavingId(match.id);
     try {
       const response: IPredictionResponse = await apiPost<IPredictionResponse>(
-        '/api/predictions',
+        "/api/predictions",
         {
           matchId: match.id,
           predictedHomeScore: draft.homeScore,
-          predictedAwayScore: draft.awayScore
-        }
+          predictedAwayScore: draft.awayScore,
+        },
       );
       const saved: IPrediction = adaptPredictionFromApi(response.prediction);
       setPredictionsByMatchId(
         (prev: Map<string, IPrediction>): Map<string, IPrediction> =>
-          new Map(prev).set(saved.matchId, saved)
+          new Map(prev).set(saved.matchId, saved),
       );
       setDrafts((prev: Map<string, IDraft>): Map<string, IDraft> => {
         const next: Map<string, IDraft> = new Map(prev);
@@ -249,13 +358,13 @@ const handleSaveMatch = async (match: IMatch): Promise<void> => {
         return next;
       });
       toast.success(
-        `Pronóstico de ${match.homeTeam.name} vs ${match.awayTeam.name} guardado. Puedes verlo en Mis Predicciones.`
+        `Pronóstico de ${match.homeTeam.name} vs ${match.awayTeam.name} guardado. Puedes verlo en Mis Predicciones.`,
       );
     } catch (err: unknown) {
       const message: string =
-        typeof err === 'object' && err !== null && 'message' in err
+        typeof err === "object" && err !== null && "message" in err
           ? String((err as { message: unknown }).message)
-          : 'Error al guardar';
+          : "Error al guardar";
       toast.error(message);
     } finally {
       setSavingId(null);
@@ -263,8 +372,16 @@ const handleSaveMatch = async (match: IMatch): Promise<void> => {
   };
 
   const upcomingMatches: IMatch[] = matches.filter(
-    (m: IMatch): boolean => !m.isFinished && !predictionsByMatchId.has(m.id)
+    (m: IMatch): boolean => !m.isFinished && !predictionsByMatchId.has(m.id),
   );
+
+  const availableGroups: string[] = getAvailableGroups(upcomingMatches);
+
+  const filteredByGroup: IMatch[] = groupFilter
+    ? upcomingMatches.filter((m: IMatch) => m.groupLabel === groupFilter)
+    : upcomingMatches;
+
+  const visibleMatches: IMatch[] = applyTimeFilter(filteredByGroup, filter);
 
   return (
     <>
@@ -276,63 +393,106 @@ const handleSaveMatch = async (match: IMatch): Promise<void> => {
         </p>
       </div>
 
+      <div style={filterBarStyle}>
+        {FILTER_OPTIONS.map(
+          (opt: IFilterOption): ReactElement => (
+            <button
+              key={opt.value}
+              type="button"
+              style={chipStyle(filter === opt.value)}
+              onClick={(): void => setFilter(opt.value)}
+            >
+              {opt.label}
+            </button>
+          ),
+        )}
+      </div>
+
+      {availableGroups.length > 0 && (
+        <div style={groupFilterBarStyle}>
+          <span style={filterLabelStyle}>Grupo:</span>
+          <button
+            type="button"
+            style={chipStyle(groupFilter === null)}
+            onClick={(): void => setGroupFilter(null)}
+          >
+            Todos
+          </button>
+          {availableGroups.map(
+            (group: string): ReactElement => (
+              <button
+                key={group}
+                type="button"
+                style={chipStyle(groupFilter === group)}
+                onClick={(): void => setGroupFilter(group)}
+              >
+                {group}
+              </button>
+            ),
+          )}
+        </div>
+      )}
+
       {loading ? (
         <div style={messageStyle}>Cargando partidos…</div>
-      ) : upcomingMatches.length === 0 ? (
+      ) : visibleMatches.length === 0 ? (
         <div style={messageStyle}>
           {matches.filter((m: IMatch): boolean => !m.isFinished).length === 0
-            ? 'Aún no hay partidos próximos.'
-            : '¡Ya tienes pronóstico en todos los partidos disponibles!'}
+            ? "Aún no hay partidos próximos."
+            : upcomingMatches.length === 0
+              ? "¡Ya tienes pronóstico en todos los partidos disponibles!"
+              : "No hay partidos para este filtro."}
         </div>
       ) : (
         <div style={listStyle}>
-          {upcomingMatches.map(
-            (match: IMatch): ReactElement => {
-              const draft: IDraft | undefined = drafts.get(match.id);
-              const hasDraft: boolean =
-                draft !== undefined &&
-                draft.homeScore !== null &&
-                draft.awayScore !== null;
-              const locked: boolean = isMatchLocked(new Date(match.kickoffDate));
-              const isSaving: boolean = savingId === match.id;
+          {visibleMatches.map((match: IMatch): ReactElement => {
+            const draft: IDraft | undefined = drafts.get(match.id);
+            const hasDraft: boolean =
+              draft !== undefined &&
+              draft.homeScore !== null &&
+              draft.awayScore !== null;
+            const locked: boolean = isMatchLocked(new Date(match.kickoffDate));
+            const isSaving: boolean = savingId === match.id;
 
-              return (
-                <div key={match.id} style={matchWrapperStyle}>
-                  <MatchCard
-                    match={match}
-                    predictedHomeScore={resolveHomeValue(match.id)}
-                    predictedAwayScore={resolveAwayValue(match.id)}
-                    onHomeScoreChange={(value: number): void =>
-                      updateDraft(match.id, 'home', value)
-                    }
-                    onAwayScoreChange={(value: number): void =>
-                      updateDraft(match.id, 'away', value)
-                    }
-                  />
-                  <div style={matchActionRowStyle}>
-                    {!locked ? (
-                      <button
-                        type="button"
-                        disabled={isSaving || !hasDraft}
-                        onClick={(): void => {
-                          void handleSaveMatch(match);
+            return (
+              <div key={match.id} style={matchWrapperStyle}>
+                <MatchCard
+                  match={match}
+                  predictedHomeScore={resolveHomeValue(match.id)}
+                  predictedAwayScore={resolveAwayValue(match.id)}
+                  onHomeScoreChange={(value: number): void =>
+                    updateDraft(match.id, "home", value)
+                  }
+                  onAwayScoreChange={(value: number): void =>
+                    updateDraft(match.id, "away", value)
+                  }
+                />
+                <div style={matchActionRowStyle}>
+                  {!locked ? (
+                    <button
+                      type="button"
+                      disabled={isSaving || !hasDraft}
+                      onClick={(): void => {
+                        void handleSaveMatch(match);
+                      }}
+                      style={saveButtonStyle(isSaving || !hasDraft)}
+                    >
+                      <span
+                        className="material-symbols-outlined"
+                        style={{
+                          fontSize: "18px",
+                          fontVariationSettings: "'FILL' 1",
                         }}
-                        style={saveButtonStyle(isSaving || !hasDraft)}
                       >
-                        <span
-                          className="material-symbols-outlined"
-                          style={{ fontSize: '18px', fontVariationSettings: "'FILL' 1" }}
-                        >
-                          save
-                        </span>
-                        {isSaving ? 'Guardando…' : 'Guardar'}
-                      </button>
-                    ) : null}
-                  </div>
+                        save
+                      </span>
+                      {isSaving ? "Guardando…" : "Guardar"}
+                    </button>
+                  ) : null}
                 </div>
-              );
-            }
-          )}
+              </div>
+            );
+          })}
         </div>
       )}
     </>

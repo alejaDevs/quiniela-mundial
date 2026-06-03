@@ -30,6 +30,13 @@ const FILTER_OPTIONS: IFilterOption[] = [
   { value: 'finished', label: 'Finalizados' }
 ];
 
+const getAvailableGroups = (matches: IMatch[]): string[] => {
+  const groups = matches
+    .map((m: IMatch) => m.groupLabel)
+    .filter((g): g is string => g !== null && g !== undefined);
+  return [...new Set(groups)].sort();
+};
+
 const isSameDay = (a: Date, b: Date): boolean =>
   a.getFullYear() === b.getFullYear() &&
   a.getMonth() === b.getMonth() &&
@@ -89,7 +96,25 @@ const filterBarStyle: CSSProperties = {
   display: 'flex',
   flexWrap: 'wrap',
   gap: Theme.Spacing.sm,
+  marginBottom: Theme.Spacing.sm
+};
+
+const groupFilterBarStyle: CSSProperties = {
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: Theme.Spacing.sm,
   marginBottom: Theme.Spacing.lg
+};
+
+const filterLabelStyle: CSSProperties = {
+  fontFamily: Theme.Typography.fontFamilyBody,
+  fontSize: Theme.Typography.labelSm?.fontSize ?? '11px',
+  fontWeight: 600,
+  letterSpacing: '0.08em',
+  textTransform: 'uppercase',
+  color: Theme.Colors.onSurfaceVariant,
+  alignSelf: 'center',
+  marginRight: Theme.Spacing.xs
 };
 
 const chipStyle = (active: boolean): CSSProperties => ({
@@ -129,6 +154,7 @@ export const Resultados = (): ReactElement => {
   const [matches, setMatches] = useState<IMatch[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [filter, setFilter] = useState<ResultsFilter>('all');
+  const [groupFilter, setGroupFilter] = useState<string | null>(null);
 
   const load = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -157,7 +183,13 @@ export const Resultados = (): ReactElement => {
     }
   );
 
-  const visibleMatches: IMatch[] = applyFilter(orderedMatches, filter);
+  const availableGroups: string[] = getAvailableGroups(matches);
+
+  const filteredByGroup: IMatch[] = groupFilter
+    ? orderedMatches.filter((m: IMatch) => m.groupLabel === groupFilter)
+    : orderedMatches;
+
+  const visibleMatches: IMatch[] = applyFilter(filteredByGroup, filter);
 
   return (
     <>
@@ -189,6 +221,31 @@ export const Resultados = (): ReactElement => {
           )
         )}
       </div>
+
+      {availableGroups.length > 0 && (
+        <div style={groupFilterBarStyle}>
+          <span style={filterLabelStyle}>Grupo:</span>
+          <button
+            type="button"
+            style={chipStyle(groupFilter === null)}
+            onClick={(): void => setGroupFilter(null)}
+          >
+            Todos
+          </button>
+          {availableGroups.map(
+            (group: string): ReactElement => (
+              <button
+                key={group}
+                type="button"
+                style={chipStyle(groupFilter === group)}
+                onClick={(): void => setGroupFilter(group)}
+              >
+                {group}
+              </button>
+            )
+          )}
+        </div>
+      )}
 
       {loading ? (
         <div style={emptyStyle}>Cargando partidos…</div>
