@@ -30,7 +30,7 @@ export const calculatePredictionPoints = (input: IScoreInput): number => {
   const predictedOutcome: number = Math.sign(predictedDiff);
   const actualOutcome: number = Math.sign(actualDiff);
 
-  if (predictedOutcome === actualOutcome) {
+  if (predictedOutcome === actualOutcome && predictedOutcome !== 0) {
     return POINTS_CORRECT_OUTCOME;
   }
 
