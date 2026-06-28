@@ -1,0 +1,345 @@
+<!DOCTYPE html><html class="light" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Reglas y Puntuación - FIFA 2026 Predictor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary": "#ffffff",
+                    "secondary-fixed-dim": "#9ecaff",
+                    "on-primary-fixed": "#002201",
+                    "on-secondary-container": "#00355c",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#221b00",
+                    "inverse-surface": "#2e3132",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-tint": "#3b6934",
+                    "surface-container-high": "#e7e8e9",
+                    "tertiary": "#705d00",
+                    "secondary": "#0061a4",
+                    "surface-dim": "#d9dadb",
+                    "on-secondary-fixed-variant": "#00497d",
+                    "surface": "#f8f9fa",
+                    "primary-container": "#2d5a27",
+                    "outline-variant": "#c2c9bb",
+                    "primary-fixed": "#bcf0ae",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-surface-variant": "#42493e",
+                    "tertiary-fixed": "#ffe16d",
+                    "tertiary-fixed-dim": "#e9c400",
+                    "on-primary-fixed-variant": "#23501e",
+                    "secondary-container": "#33a0fd",
+                    "on-error-container": "#93000a",
+                    "inverse-primary": "#a1d494",
+                    "secondary-fixed": "#d1e4ff",
+                    "primary": "#154212",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-low": "#f3f4f5",
+                    "on-secondary-fixed": "#001d36",
+                    "on-secondary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#f8f9fa",
+                    "on-tertiary-fixed-variant": "#544600",
+                    "on-primary-container": "#9dd090",
+                    "surface-container": "#edeeef",
+                    "outline": "#72796e",
+                    "background": "#f8f9fa",
+                    "on-background": "#191c1d",
+                    "tertiary-container": "#c9a900",
+                    "primary-fixed-dim": "#a1d494",
+                    "on-tertiary-container": "#4c3e00",
+                    "error": "#ba1a1a",
+                    "surface-variant": "#e1e3e4",
+                    "on-surface": "#191c1d",
+                    "on-error": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "20px",
+                    "card-padding": "12px 24px",
+                    "base": "8px",
+                    "margin-desktop": "40px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "headline-lg-mobile": ["Montserrat"],
+                    "display-lg": ["Montserrat"],
+                    "score-display": ["Montserrat"],
+                    "label-lg": ["Inter"],
+                    "headline-md": ["Montserrat"],
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg": ["Montserrat"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "score-display": ["36px", {"lineHeight": "44px", "fontWeight": "800"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #191c1d;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1.5px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            border-color: #2d5a27;
+            transform: translateY(-2px);
+            box-shadow: 0px 4px 20px rgba(0,0,0,0.06);
+        }
+        .text-pitch-green { color: #2d5a27; }
+        .bg-pitch-green { background-color: #2d5a27; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-inverse-surface shadow-sm sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4">
+<div class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">
+                FIFA 2026 Predictor
+            </div>
+<nav class="hidden md:flex gap-8">
+<a class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors" href="#">Matches</a>
+<a class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors" href="#">Standings</a>
+<a class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors" href="#">Leaderboard</a>
+<a class="font-label-lg text-label-lg text-primary font-bold transition-colors" href="#">Rules</a>
+</nav>
+<div class="flex items-center gap-4 text-primary dark:text-inverse-primary">
+<span class="material-symbols-outlined cursor-pointer hover:scale-95 duration-100">account_circle</span>
+</div>
+</div>
+</header>
+<main class="flex-grow container mx-auto max-w-[1200px] px-margin-mobile md:px-margin-desktop py-8 mb-24 md:mb-8">
+<!-- Breadcrumbs -->
+<nav class="flex items-center space-x-2 text-on-surface-variant mb-6 font-label-md text-label-md">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-primary font-bold">Rules</span>
+</nav>
+<!-- Header Section -->
+<div class="mb-10">
+<h1 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-4">Reglas y Puntuación</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                Domina el arte de la predicción. Entiende cómo se calculan tus puntos para escalar en el leaderboard global del Mundial 2026.
+            </p>
+</div>
+<!-- Scoring Grid (Asymmetric Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
+<!-- 5 Points Card - Large Focus -->
+<div class="md:col-span-7 glass-card rounded-xl shadow-sm p-card-padding flex flex-col md:flex-row items-center gap-6 overflow-hidden relative">
+<div class="absolute top-0 left-0 w-1 h-full bg-pitch-green"></div>
+<div class="flex-shrink-0 w-24 h-24 bg-primary-fixed-dim/20 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-pitch-green text-[48px]" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+</div>
+<div class="flex-grow text-center md:text-left">
+<div class="flex items-center justify-center md:justify-start gap-2 mb-1">
+<span class="bg-pitch-green text-white font-bold text-headline-md px-3 py-1 rounded-lg">5 pts</span>
+<span class="font-headline-md text-headline-md">Marcador Exacto</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">
+                        El premio máximo para el analista perfecto. Adivina el resultado final idéntico al oficial.
+                    </p>
+<div class="inline-flex items-center gap-4 bg-surface-container rounded-lg px-4 py-2 border border-outline-variant/30">
+<div class="flex flex-col items-center">
+<span class="text-label-md font-bold text-on-surface-variant">Predicho</span>
+<span class="font-score-display text-headline-md text-pitch-green">2 - 1</span>
+</div>
+<div class="w-px h-8 bg-outline-variant"></div>
+<div class="flex flex-col items-center">
+<span class="text-label-md font-bold text-on-surface-variant">Resultado</span>
+<span class="font-score-display text-headline-md text-pitch-green">2 - 1</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 3 Points Card -->
+<div class="md:col-span-5 glass-card rounded-xl shadow-sm p-card-padding flex flex-col items-center text-center gap-4">
+<div class="w-16 h-16 bg-secondary-fixed/30 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-[32px]" style="font-variation-settings: 'FILL' 1;">sports_soccer</span>
+</div>
+<div>
+<div class="flex items-center justify-center gap-2 mb-1">
+<span class="text-secondary font-bold text-headline-md">3 pts</span>
+<h3 class="font-headline-md text-headline-md">Acertar Ganador</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                        Predices quién ganará pero no el marcador exacto.
+                    </p>
+</div>
+<div class="w-full bg-surface-container rounded-lg p-2 text-label-md flex justify-between items-center">
+<span class="">Predicho: 1 - 0</span>
+<span class="material-symbols-outlined text-secondary">trending_flat</span>
+<span class="">Final: 3 - 0</span>
+</div>
+</div>
+<!-- 2 Points Card -->
+<div class="md:col-span-5 glass-card rounded-xl shadow-sm p-card-padding flex flex-col items-center text-center gap-4">
+<div class="w-16 h-16 bg-tertiary-fixed/30 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-[32px]">handshake</span>
+</div>
+<div>
+<div class="flex items-center justify-center gap-2 mb-1">
+<span class="text-tertiary font-bold text-headline-md">2 pts</span>
+<h3 class="font-headline-md text-headline-md">Empate Táctico</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                        Predices un empate, pero la cantidad de goles es distinta.
+                    </p>
+</div>
+<div class="w-full bg-surface-container rounded-lg p-2 text-label-md flex justify-between items-center">
+<span class="">Predicho: 1 - 1</span>
+<span class="material-symbols-outlined text-tertiary">trending_flat</span>
+<span class="">Final: 2 - 2</span>
+</div>
+</div>
+<!-- 0 Points Card -->
+<div class="md:col-span-7 glass-card rounded-xl shadow-sm p-card-padding flex flex-col md:flex-row items-center gap-6">
+<div class="flex-shrink-0 w-24 h-24 bg-error-container/30 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-error text-[48px]">close</span>
+</div>
+<div class="flex-grow text-center md:text-left">
+<div class="flex items-center justify-center md:justify-start gap-2 mb-1">
+<span class="text-error font-bold text-headline-md">0 pts</span>
+<span class="font-headline-md text-headline-md">Sin Acierto</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                        Cuando ni el ganador ni el marcador coinciden con tu visión.
+                    </p>
+<p class="text-label-md mt-2 text-on-surface-variant/70 italic">¡No te preocupes, el fútbol siempre da revanchas!</p>
+</div>
+</div>
+</div>
+<!-- General Rules Section -->
+<section class="mb-12">
+<div class="flex items-center gap-3 mb-6">
+<div class="h-8 w-2 bg-pitch-green rounded-full"></div>
+<h2 class="font-headline-lg text-headline-md md:text-headline-lg">Reglas Generales</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-6">
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-pitch-green mt-1">update</span>
+<div>
+<h4 class="font-label-lg text-label-lg mb-1">Cierre de Predicciones</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Las predicciones se cierran exactamente 15 minutos antes del silbatazo inicial de cada encuentro. Una vez guardada tu predicción, ya no se puede modificar, incluso si todavía queda tiempo antes del partido.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-pitch-green mt-1">groups</span>
+<div>
+<h4 class="font-label-lg text-label-lg mb-1">Puntos Acumulativos</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                                Los puntos se otorgan por partido y se suman automáticamente a tu perfil. Puedes ver tu posición en tiempo real en el Leaderboard.
+                            </p>
+</div>
+</div>
+</div>
+<div class="space-y-6">
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-pitch-green mt-1">timer</span>
+<div>
+<h4 class="font-label-lg text-label-lg mb-1">Tiempo Extra</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                                Los resultados se calculan con base en el tiempo regular (90 min + compensación). Los tiempos extra y penales no cuentan para la predicción del marcador final.
+                            </p>
+</div>
+</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-pitch-green mt-1">verified</span>
+<div>
+<h4 class="font-label-lg text-label-lg mb-1">Fair Play</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                                Solo se permite una cuenta por usuario. Cualquier intento de manipulación resultará en la eliminación total del torneo.
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<div class="bg-primary-container text-on-primary-container rounded-xl p-8 text-center shadow-lg relative overflow-hidden">
+<div class="absolute inset-0 opacity-10 bg-cover bg-center" data-alt="A macro shot of a pristine soccer ball on a lush, dew-covered grass field at dawn. The morning light is soft and golden, creating long shadows and highlighting the texture of the stadium turf. The aesthetic is clean, professional, and captures the excitement of a high-stakes tournament opening match. High resolution sports photography style." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDNRrrimJ3FZTOZ1DoH7iVAtKMaW97VoeoGGJhZe6DZ8qz2fXUYXQ4JT7mYTyx2FXMOIRQFBGBrPbx6Jvna7vvluSP6EDzHTkttEKL2YAYwurvTzhsM_DWmqT4YbSBFRIKKJWyIjcc2bEVym2gerOmYg_yTZWN5NYD7bKA8gSYxXT28go8KuWvg4bK1DBvZQFJHV1prvKVa-fS9nwszOKATbzIMjWwy_MclTa7LCqVpozGjXO-ZNy1kdE8mRnipfjOFIAb1gNIQLHA')"></div>
+<div class="relative z-10">
+<h3 class="font-headline-lg text-headline-lg mb-4">¿Listo para demostrar tu conocimiento?</h3>
+<p class="font-body-lg text-body-lg mb-6 opacity-90">Comienza a predecir los partidos de la fase de grupos ahora.</p>
+<button class="bg-white text-primary font-bold px-8 py-3 rounded-full hover:scale-105 active:scale-95 transition-all shadow-md">
+                    Ir a Partidos
+                </button>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface-container dark:bg-surface-container-highest shadow-lg rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-all py-1" href="#">
+<span class="material-symbols-outlined">sports_soccer</span>
+<span class="font-label-md text-label-md">Matches</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-all py-1" href="#">
+<span class="material-symbols-outlined">format_list_numbered</span>
+<span class="font-label-md text-label-md">Standings</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-all py-1" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="font-label-md text-label-md">Leaderboard</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1" href="#">
+<span class="material-symbols-outlined">gavel</span>
+<span class="font-label-md text-label-md">Rules</span>
+</a>
+</nav>
+<!-- Simple Footer for Desktop -->
+<footer class="hidden md:block py-8 border-t border-outline-variant/30 bg-surface text-center">
+<div class="container mx-auto px-margin-desktop">
+<p class="text-label-md text-on-surface-variant opacity-70">
+                © 2026 FIFA World Cup Predictor. Todos los derechos reservados.
+            </p>
+<div class="flex justify-center gap-6 mt-4 font-label-md text-label-md text-on-surface-variant">
+<a class="hover:text-primary" href="#">Términos de Servicio</a>
+<a class="hover:text-primary" href="#">Privacidad</a>
+<a class="hover:text-primary" href="#">Soporte</a>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interaction: Update breadcrumbs or active states if needed
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                // Subtle feedback could be added here via JS if desired
+            });
+        });
+    </script>
+
+
+</body></html>
