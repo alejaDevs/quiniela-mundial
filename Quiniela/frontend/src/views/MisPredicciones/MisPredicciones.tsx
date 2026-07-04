@@ -57,6 +57,16 @@ const STAGE_OPTIONS: ReadonlyArray<{ key: StageFilter | null; label: string }> =
   { key: "final_all",     label: "Final" },
 ];
 
+const ORDERED_STAGES: MatchStage[] = [
+  "group",
+  "round_of_32",
+  "round_of_16",
+  "quarter_final",
+  "semi_final",
+  "third_place",
+  "final",
+];
+
 const isToday = (date: Date): boolean => {
   const now = new Date();
   return (
@@ -199,7 +209,7 @@ export const MisPredicciones = (): ReactElement => {
   const [loading, setLoading] = useState<boolean>(true);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [timeFilter, setTimeFilter] = useState<TimeFilter | null>(null);
-  const [stageFilter, setStageFilter] = useState<StageFilter | null>("round_of_32");
+  const [stageFilter, setStageFilter] = useState<StageFilter | null>(null);
 
   const loadData = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -224,6 +234,15 @@ export const MisPredicciones = (): ReactElement => {
       setMatches(matchList);
       setPredictionsByMatchId(predictionsMap);
       setDrafts(new Map());
+
+      // Auto-select the active phase: first stage with any unfinished match
+      const activeStage: MatchStage | undefined = ORDERED_STAGES.find(
+        (s: MatchStage): boolean =>
+          matchList.some((m: IMatch) => m.stage === s && !m.isFinished),
+      );
+      if (activeStage !== undefined) {
+        setStageFilter(activeStage === "third_place" ? "final_all" : activeStage);
+      }
     } finally {
       setLoading(false);
     }

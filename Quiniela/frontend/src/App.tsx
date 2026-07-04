@@ -13,6 +13,7 @@ import { Admin } from './views/Admin/Admin';
 import { CambiarContrasena } from './views/CambiarContrasena/CambiarContrasena';
 import { HistorialPuntajes } from './views/HistorialPuntajes/HistorialPuntajes';
 import { Reglas } from './views/Reglas/Reglas';
+import { Bracket } from './views/Bracket/Bracket';
 import { NotFound } from './views/NotFound/NotFound';
 
 export const App = (): ReactElement => {
@@ -35,6 +36,7 @@ export const App = (): ReactElement => {
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/historial" element={<HistorialPuntajes />} />
             <Route path="/reglas" element={<Reglas />} />
+            <Route path="/bracket" element={<Bracket />} />
             <Route
               path="/admin"
               element={

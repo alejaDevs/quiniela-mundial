@@ -305,6 +305,33 @@ export const ResultCard = ({ match }: IResultCardProps): ReactElement => {
           </div>
         </div>
 
+        {match.stadium !== null || match.city !== null ? (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: Theme.Spacing.xs,
+              marginTop: Theme.Spacing.md,
+              color: Theme.Colors.onSurfaceVariant,
+              fontFamily: Theme.Typography.fontFamilyBody,
+              fontSize: Theme.Typography.labelMd.fontSize,
+            }}
+          >
+            <span
+              className="material-symbols-outlined"
+              style={{ fontSize: "16px" }}
+            >
+              stadium
+            </span>
+            <span>
+              {match.stadium !== null ? match.stadium : ""}
+              {match.stadium !== null && match.city !== null ? " · " : ""}
+              {match.city !== null ? match.city : ""}
+            </span>
+          </div>
+        ) : null}
+
         <div style={expandRowStyle}>
           <button
             type="button"

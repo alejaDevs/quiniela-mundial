@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { Theme } from '../../Theme';
 import { IMatch } from '../../types/Index';
-import { apiGet, apiPut } from '../../utils/ApiClient';
+import { apiGet, apiPut, apiPost } from '../../utils/ApiClient';
 import {
   adaptMatchFromApi,
   adaptMatchListFromApi
@@ -164,6 +164,47 @@ const actionButtonStyle = (disabled: boolean): CSSProperties => ({
   opacity: disabled ? 0.6 : 1
 });
 
+type SnapshotPhaseKey =
+  | 'round_of_32'
+  | 'round_of_16'
+  | 'quarter_final'
+  | 'semi_final'
+  | 'final_all';
+
+const SNAPSHOT_PHASES: ReadonlyArray<{ key: SnapshotPhaseKey; label: string }> = [
+  { key: 'round_of_32',   label: '16vos de Final' },
+  { key: 'round_of_16',   label: 'Octavos de Final' },
+  { key: 'quarter_final', label: 'Cuartos de Final' },
+  { key: 'semi_final',    label: 'Semifinales' },
+  { key: 'final_all',     label: 'Final' },
+];
+
+const chipStyle = (selected: boolean): CSSProperties => ({
+  padding: `${Theme.Spacing.sm} ${Theme.Spacing.md}`,
+  borderRadius: Theme.Radii.full,
+  fontFamily: Theme.Typography.fontFamilyBody,
+  fontSize: Theme.Typography.labelLg.fontSize,
+  fontWeight: Theme.Typography.labelLg.fontWeight,
+  letterSpacing: Theme.Typography.labelLg.letterSpacing,
+  backgroundColor: selected ? Theme.Colors.primary : Theme.Colors.surfaceContainerLow,
+  color: selected ? Theme.Colors.onPrimary : Theme.Colors.onSurfaceVariant,
+  border: selected
+    ? `1px solid ${Theme.Colors.primary}`
+    : `1px solid ${Theme.Colors.surfaceContainerHighest}`,
+  cursor: 'pointer',
+  transition: 'background-color 0.15s, color 0.15s',
+});
+
+const warningStyle: CSSProperties = {
+  fontFamily: Theme.Typography.fontFamilyBody,
+  fontSize: Theme.Typography.labelMd.fontSize,
+  color: Theme.Colors.error,
+  backgroundColor: `${Theme.Colors.error}18`,
+  border: `1px solid ${Theme.Colors.error}44`,
+  borderRadius: Theme.Radii.md,
+  padding: `${Theme.Spacing.sm} ${Theme.Spacing.md}`,
+};
+
 const parseScore = (raw: string): number | null => {
   if (raw === '') {
     return null;
@@ -175,12 +216,20 @@ const parseScore = (raw: string): number | null => {
   return parsed;
 };
 
+interface ISnapshotMessageResponse {
+  message: string;
+}
+
 export const Admin = (): ReactElement => {
   const [matches, setMatches] = useState<IMatch[]>([]);
   const [drafts, setDrafts] = useState<Map<string, IDraft>>(new Map());
   const [loading, setLoading] = useState<boolean>(true);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [submittingId, setSubmittingId] = useState<string | null>(null);
+  const [selectedPhase, setSelectedPhase] = useState<SnapshotPhaseKey>('round_of_32');
+  const [snapshotLoading, setSnapshotLoading] = useState<boolean>(false);
+  const [snapshotFeedback, setSnapshotFeedback] = useState<string | null>(null);
+  const [snapshotError, setSnapshotError] = useState<boolean>(false);
 
   const load = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -257,6 +306,29 @@ export const Admin = (): ReactElement => {
       setFeedback(message);
     } finally {
       setSubmittingId(null);
+    }
+  };
+
+  const handleSaveSnapshot = async (): Promise<void> => {
+    setSnapshotLoading(true);
+    setSnapshotFeedback(null);
+    setSnapshotError(false);
+    try {
+      const resp = await apiPost<ISnapshotMessageResponse>(
+        `/api/leaderboard/snapshot/${selectedPhase}`,
+        {}
+      );
+      setSnapshotFeedback(resp.message);
+      setSnapshotError(false);
+    } catch (err: unknown) {
+      const message: string =
+        typeof err === 'object' && err !== null && 'message' in err
+          ? String((err as { message: unknown }).message)
+          : 'Error al guardar el snapshot';
+      setSnapshotFeedback(message);
+      setSnapshotError(true);
+    } finally {
+      setSnapshotLoading(false);
     }
   };
 
@@ -389,6 +461,55 @@ export const Admin = (): ReactElement => {
             )}
           </div>
         )}
+      </section>
+
+      <section style={{ ...workspaceStyle, marginTop: Theme.Spacing.xl }}>
+        <div style={sectionHeader}>
+          <h2 style={sectionTitleStyle}>Cerrar Fase Manualmente</h2>
+          {snapshotFeedback !== null ? (
+            <span
+              style={{
+                fontFamily: Theme.Typography.fontFamilyBody,
+                fontSize: Theme.Typography.labelMd.fontSize,
+                color: snapshotError ? Theme.Colors.error : Theme.Colors.onSurfaceVariant,
+              }}
+            >
+              {snapshotFeedback}
+            </span>
+          ) : null}
+        </div>
+
+        <p style={warningStyle}>
+          Esto sobrescribirá el historial guardado de esta fase si ya existe.
+        </p>
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: Theme.Spacing.sm }}>
+          {SNAPSHOT_PHASES.map(
+            (p): ReactElement => (
+              <button
+                key={p.key}
+                type="button"
+                style={chipStyle(selectedPhase === p.key)}
+                onClick={(): void => setSelectedPhase(p.key)}
+              >
+                {p.label}
+              </button>
+            )
+          )}
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <button
+            type="button"
+            disabled={snapshotLoading}
+            onClick={(): void => {
+              void handleSaveSnapshot();
+            }}
+            style={actionButtonStyle(snapshotLoading)}
+          >
+            {snapshotLoading ? 'Guardando…' : 'Guardar Snapshot de Fase'}
+          </button>
+        </div>
       </section>
     </>
   );

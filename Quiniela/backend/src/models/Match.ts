@@ -24,6 +24,8 @@ export interface IMatch {
   awayScore: number | null;
   isFinished: boolean;
   apiFootballId: number | null;
+  stadium: string | null;
+  city: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -68,6 +70,8 @@ const MatchSchema: Schema<IMatchDocument> = new Schema<IMatchDocument>(
     awayScore: { type: Number, default: null, min: 0 },
     isFinished: { type: Boolean, required: true, default: false },
     apiFootballId: { type: Number, default: null },
+    stadium: { type: String, default: null, trim: true },
+    city: { type: String, default: null, trim: true },
   },
   { timestamps: true },
 );

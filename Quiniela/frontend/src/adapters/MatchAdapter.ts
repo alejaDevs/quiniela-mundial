@@ -17,6 +17,8 @@ interface IRawMatch {
   awayScore?: number | null;
   isFinished?: boolean;
   updatedAt?: string;
+  stadium?: string | null;
+  city?: string | null;
 }
 
 const adaptTeam = (raw: IRawTeam | undefined): IMatchTeam => {
@@ -56,7 +58,9 @@ export const adaptMatchFromApi = (raw: unknown): IMatch => {
     awayScore: typeof data.awayScore === 'number' ? data.awayScore : null,
     isFinished: data.isFinished,
     updatedAt:
-      typeof data.updatedAt === 'string' ? data.updatedAt : new Date(0).toISOString()
+      typeof data.updatedAt === 'string' ? data.updatedAt : new Date(0).toISOString(),
+    stadium: typeof data.stadium === 'string' ? data.stadium : null,
+    city: typeof data.city === 'string' ? data.city : null,
   };
 };
 

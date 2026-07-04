@@ -259,6 +259,7 @@ export const TopNavBar = (): ReactElement => {
             {renderDrawerLink('/dashboard', 'Pronósticos')}
             {renderDrawerLink('/mis-predicciones', 'Mis Predicciones')}
             {renderDrawerLink('/resultados', 'Resultados')}
+            {renderDrawerLink('/bracket', 'Cuadro')}
             {renderDrawerLink('/leaderboard', 'Liga')}
             {renderDrawerLink('/historial', 'Historial')}
             {renderDrawerLink('/reglas', 'Reglas')}
@@ -334,6 +335,7 @@ export const TopNavBar = (): ReactElement => {
                 {renderLink('/dashboard', 'Pronósticos')}
                 {renderLink('/mis-predicciones', 'Mis Predicciones')}
                 {renderLink('/resultados', 'Resultados')}
+                {renderLink('/bracket', 'Cuadro')}
                 {renderLink('/leaderboard', 'Liga')}
                 {renderLink('/historial', 'Historial')}
                 {renderLink('/reglas', 'Reglas')}

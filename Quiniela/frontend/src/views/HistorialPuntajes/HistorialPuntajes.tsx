@@ -6,7 +6,7 @@ import {
 } from "react";
 import { Theme } from "../../Theme";
 import { useIsMobile } from "../../utils/UseIsMobile";
-import { IMatch, MatchStage } from "../../types/Index";
+import { IMatch, MatchStage, IPhaseSnapshotSummary, IPhaseSnapshot } from "../../types/Index";
 import { apiGet } from "../../utils/ApiClient";
 import { adaptMatchListFromApi } from "../../adapters/MatchAdapter";
 
@@ -38,6 +38,14 @@ interface IMatchesResponse {
 interface IPhaseLeaderboardResponse {
   entries: IPhaseLeaderboardEntry[];
   totalFinishedMatchesInPhase: number;
+}
+
+interface ISnapshotsResponse {
+  snapshots: IPhaseSnapshotSummary[];
+}
+
+interface ISnapshotResponse {
+  snapshot: IPhaseSnapshot;
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -345,6 +353,21 @@ const emptyStyle: CSSProperties = {
   textAlign: "center",
 };
 
+const finalizedBadgeStyle: CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '6px',
+  backgroundColor: Theme.Colors.tertiaryContainer,
+  color: Theme.Colors.onTertiaryContainer,
+  fontFamily: Theme.Typography.fontFamilyBody,
+  fontSize: Theme.Typography.labelMd.fontSize,
+  fontWeight: 700,
+  letterSpacing: '0.06em',
+  padding: `4px 14px`,
+  borderRadius: Theme.Radii.full,
+  marginBottom: Theme.Spacing.lg,
+};
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export const HistorialPuntajes = (): ReactElement => {
@@ -352,19 +375,28 @@ export const HistorialPuntajes = (): ReactElement => {
   const [activePhase, setActivePhase] = useState<PhaseKey | null>(null);
   const [entries, setEntries] = useState<IPhaseLeaderboardEntry[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [closedPhases, setClosedPhases] = useState<Set<string>>(new Set());
+  const [isPhaseFinalized, setIsPhaseFinalized] = useState<boolean>(false);
 
-  // Detect active phase from matches on mount
+  // Detect active phase from matches on mount + fetch closed snapshots
   useEffect((): void => {
-    const detect = async (): Promise<void> => {
+    const init = async (): Promise<void> => {
       try {
-        const resp = await apiGet<IMatchesResponse>("/api/matches");
-        const matchList: IMatch[] = adaptMatchListFromApi(resp.matches);
+        const [matchResp, snapshotResp] = await Promise.all([
+          apiGet<IMatchesResponse>("/api/matches"),
+          apiGet<ISnapshotsResponse>("/api/leaderboard/snapshots"),
+        ]);
+        const matchList: IMatch[] = adaptMatchListFromApi(matchResp.matches);
         setActivePhase(detectActivePhase(matchList));
+        const closed: Set<string> = new Set(
+          snapshotResp.snapshots.map((s: IPhaseSnapshotSummary): string => s.phase)
+        );
+        setClosedPhases(closed);
       } catch {
         setActivePhase("group");
       }
     };
-    void detect();
+    void init();
   }, []);
 
   // Load leaderboard whenever active phase changes
@@ -372,17 +404,39 @@ export const HistorialPuntajes = (): ReactElement => {
     if (activePhase === null) return;
     const load = async (): Promise<void> => {
       setLoading(true);
+      setIsPhaseFinalized(false);
       try {
-        const resp = await apiGet<IPhaseLeaderboardResponse>(
-          `/api/leaderboard/phase/${activePhase}`,
-        );
-        setEntries(resp.entries);
+        if (closedPhases.has(activePhase)) {
+          const resp = await apiGet<ISnapshotResponse>(
+            `/api/leaderboard/snapshots/${activePhase}`,
+          );
+          const snap = resp.snapshot;
+          const mapped: IPhaseLeaderboardEntry[] = snap.entries.map(
+            (e: IPhaseSnapshot['entries'][number]): IPhaseLeaderboardEntry => ({
+              userId: e.userId,
+              username: e.username,
+              displayName: e.displayName,
+              totalPoints: e.totalPoints,
+              predictionsCount: e.predictionsCount,
+              predictionsScored: e.predictionsScored,
+              totalFinishedMatchesInPhase: snap.totalMatches,
+              rank: e.rank,
+            })
+          );
+          setEntries(mapped);
+          setIsPhaseFinalized(true);
+        } else {
+          const resp = await apiGet<IPhaseLeaderboardResponse>(
+            `/api/leaderboard/phase/${activePhase}`,
+          );
+          setEntries(resp.entries);
+        }
       } finally {
         setLoading(false);
       }
     };
     void load();
-  }, [activePhase]);
+  }, [activePhase, closedPhases]);
 
   const top3 = entries.slice(0, 3);
   const rest = entries.slice(3);
@@ -493,6 +547,18 @@ export const HistorialPuntajes = (): ReactElement => {
         </div>
       ) : (
         <>
+          {isPhaseFinalized ? (
+            <div style={finalizedBadgeStyle}>
+              <span
+                className="material-symbols-outlined"
+                style={{ fontSize: '14px', fontVariationSettings: "'FILL' 1" }}
+              >
+                verified
+              </span>
+              Fase Finalizada
+            </div>
+          ) : null}
+
           {/* Podium — ordered 2nd, 1st, 3rd */}
           <div style={podiumGridStyle(isMobile)}>
             {isMobile ? (

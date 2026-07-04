@@ -4,6 +4,7 @@ import { MatchModel, IMatchDocument, MatchStage } from '../models/Match';
 import { PredictionModel, IPredictionDocument } from '../models/Prediction';
 import { UserModel, IUserDocument } from '../models/User';
 import { calculatePredictionPoints } from '../utils/ScoreCalculator';
+import { computeAndSaveSnapshot } from '../services/SnapshotService';
 
 const VALID_STAGES: MatchStage[] = [
   'group',
@@ -287,6 +288,31 @@ export const updateMatchResult = async (
     }
 
     res.status(200).json({ match: updated });
+
+    void (async (): Promise<void> => {
+      try {
+        const stage: MatchStage = updated.stage;
+        if (stage === 'group') return;
+
+        if (stage === 'final' || stage === 'third_place') {
+          const [finalPending, thirdPending] = await Promise.all([
+            MatchModel.countDocuments({ stage: 'final', isFinished: false }),
+            MatchModel.countDocuments({ stage: 'third_place', isFinished: false }),
+          ]);
+          if (finalPending === 0 && thirdPending === 0) {
+            await computeAndSaveSnapshot('final_all');
+          }
+          return;
+        }
+
+        const pending: number = await MatchModel.countDocuments({ stage, isFinished: false });
+        if (pending === 0) {
+          await computeAndSaveSnapshot(stage);
+        }
+      } catch {
+        // fire-and-forget: errors must not affect the response
+      }
+    })();
   } catch (error: unknown) {
     next(error);
   }

@@ -13,6 +13,8 @@ import { useAuth } from "../../components/AuthContext";
 
 interface ILeaderboardResponse {
   entries: unknown;
+  activePhase: string;
+  activePhaseName: string;
 }
 
 const headerStyle: CSSProperties = {
@@ -37,6 +39,22 @@ const subtitleStyle: CSSProperties = {
   fontSize: Theme.Typography.bodyLg.fontSize,
   color: Theme.Colors.onSurfaceVariant,
   margin: 0,
+};
+
+const phaseBadgeStyle: CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '6px',
+  backgroundColor: Theme.Colors.primaryContainer,
+  color: Theme.Colors.onPrimaryContainer,
+  fontFamily: Theme.Typography.fontFamilyBody,
+  fontSize: Theme.Typography.labelMd.fontSize,
+  fontWeight: 600,
+  letterSpacing: '0.04em',
+  padding: `4px 12px`,
+  borderRadius: Theme.Radii.full,
+  marginTop: Theme.Spacing.xs,
+  width: 'fit-content',
 };
 
 const listStyle: CSSProperties = {
@@ -139,6 +157,8 @@ const computeRowStyle = (
 export const Leaderboard = (): ReactElement => {
   const { user } = useAuth();
   const [entries, setEntries] = useState<ILeaderboardEntry[]>([]);
+  const [activePhase, setActivePhase] = useState<string>('');
+  const [activePhaseName, setActivePhaseName] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
 
   const load = useCallback(async (): Promise<void> => {
@@ -147,6 +167,8 @@ export const Leaderboard = (): ReactElement => {
       const response: ILeaderboardResponse =
         await apiGet<ILeaderboardResponse>("/api/leaderboard");
       setEntries(adaptLeaderboardFromApi(response.entries));
+      setActivePhase(response.activePhase);
+      setActivePhaseName(response.activePhaseName);
     } finally {
       setLoading(false);
     }
@@ -163,6 +185,17 @@ export const Leaderboard = (): ReactElement => {
         <p style={subtitleStyle}>
           Aquí puedes ver el puntaje de todos los participantes.
         </p>
+        {activePhaseName.length > 0 ? (
+          <div style={phaseBadgeStyle}>
+            <span
+              className="material-symbols-outlined"
+              style={{ fontSize: '14px', fontVariationSettings: "'FILL' 1" }}
+            >
+              flag
+            </span>
+            Fase activa: {activePhaseName}
+          </div>
+        ) : null}
       </div>
 
       {loading ? (
@@ -174,6 +207,18 @@ export const Leaderboard = (): ReactElement => {
           }}
         >
           Cargando ranking…
+        </div>
+      ) : entries.every((e: ILeaderboardEntry): boolean => e.totalPoints === 0) && activePhase.length > 0 ? (
+        <div
+          style={{
+            padding: Theme.Spacing.lg,
+            textAlign: "center",
+            color: Theme.Colors.onSurfaceVariant,
+            fontFamily: Theme.Typography.fontFamilyBody,
+            fontSize: Theme.Typography.bodyLg.fontSize,
+          }}
+        >
+          Fase iniciada: {activePhaseName}. Los puntos se actualizarán cuando se registren resultados.
         </div>
       ) : (
         <div style={listStyle}>

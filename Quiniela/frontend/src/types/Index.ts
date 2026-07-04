@@ -30,6 +30,8 @@ export interface IMatch {
   awayScore: number | null;
   isFinished: boolean;
   updatedAt: string;
+  stadium: string | null;
+  city: string | null;
 }
 
 export interface IPrediction {
@@ -59,4 +61,29 @@ export interface IMatchPredictionEntry {
   predictedHomeScore: number;
   predictedAwayScore: number;
   pointsAwarded: number | null;
+}
+
+export interface IPhaseSnapshotSummary {
+  phase: string;
+  phaseName: string;
+  totalMatches: number;
+  createdAt: string;
+}
+
+export interface IPhaseSnapshotEntry {
+  userId: string;
+  username: string;
+  displayName: string;
+  totalPoints: number;
+  rank: number;
+  predictionsCount: number;
+  predictionsScored: number;
+}
+
+export interface IPhaseSnapshot {
+  phase: string;
+  phaseName: string;
+  totalMatches: number;
+  entries: IPhaseSnapshotEntry[];
+  createdAt: string;
 }

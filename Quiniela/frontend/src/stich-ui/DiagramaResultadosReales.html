@@ -1,0 +1,403 @@
+<!DOCTYPE html><html class="light" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>FIFA 2026 Predictor - Cuadro de Eliminatorias</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Montserrat:wght@100..900&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed-dim": "#a1d494",
+                    "primary-fixed": "#bcf0ae",
+                    "tertiary": "#705d00",
+                    "surface-container-high": "#e7e8e9",
+                    "surface-container": "#edeeef",
+                    "primary-container": "#2d5a27",
+                    "inverse-primary": "#a1d494",
+                    "surface-container-low": "#f3f4f5",
+                    "error-container": "#ffdad6",
+                    "on-error": "#ffffff",
+                    "surface-container-highest": "#e1e3e4",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#33a0fd",
+                    "background": "#f8f9fa",
+                    "primary": "#154212",
+                    "on-tertiary-container": "#4c3e00",
+                    "surface-variant": "#e1e3e4",
+                    "on-tertiary-fixed-variant": "#544600",
+                    "on-surface-variant": "#42493e",
+                    "on-primary": "#ffffff",
+                    "surface-bright": "#f8f9fa",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed": "#d1e4ff",
+                    "on-tertiary-fixed": "#221b00",
+                    "on-secondary-fixed": "#001d36",
+                    "surface-dim": "#d9dadb",
+                    "on-tertiary": "#ffffff",
+                    "on-surface": "#191c1d",
+                    "on-error-container": "#93000a",
+                    "tertiary-fixed": "#ffe16d",
+                    "on-secondary-container": "#00355c",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-tint": "#3b6934",
+                    "on-primary-container": "#9dd090",
+                    "surface": "#f8f9fa",
+                    "outline-variant": "#c2c9bb",
+                    "on-primary-fixed-variant": "#23501e",
+                    "tertiary-container": "#c9a900",
+                    "secondary": "#0061a4",
+                    "outline": "#72796e",
+                    "tertiary-fixed-dim": "#e9c400",
+                    "on-secondary-fixed-variant": "#00497d",
+                    "inverse-surface": "#2e3132",
+                    "error": "#ba1a1a",
+                    "secondary-fixed-dim": "#9ecaff",
+                    "on-primary-fixed": "#002201",
+                    "on-background": "#191c1d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "20px",
+                    "gutter": "16px",
+                    "card-padding": "12px 24px",
+                    "margin-desktop": "40px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Montserrat"],
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Montserrat"],
+                    "label-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "score-display": ["Montserrat"],
+                    "headline-lg-mobile": ["Montserrat"],
+                    "label-md": ["Inter"],
+                    "display-lg": ["Montserrat"]
+            },
+            "fontSize": {
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "score-display": ["36px", {"lineHeight": "44px", "fontWeight": "800"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .bracket-line-vertical {
+            width: 2px;
+            background-color: #c2c9bb;
+            position: absolute;
+        }
+        .bracket-line-horizontal {
+            height: 2px;
+            background-color: #c2c9bb;
+            position: absolute;
+        }
+        .active-path {
+            background-color: #154212 !important;
+        }
+        .match-card:hover {
+            border-color: #154212;
+            transform: scale(1.02);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-fixed-dim">
+<!-- TopNavBar -->
+<header class="w-full top-0 bg-surface dark:bg-on-surface border-b border-outline-variant dark:border-outline z-50 sticky">
+<div class="flex justify-between items-center px-margin-desktop max-w-[1200px] mx-auto h-16">
+<div class="font-display-lg text-display-lg font-black text-primary dark:text-primary-fixed">
+                FIFA 2026 Predictor
+            </div>
+<nav class="hidden md:flex gap-8 items-center h-full">
+<a class="font-label-lg text-label-lg text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors transition-all duration-200 ease-in-out" href="#">Matches</a>
+<a class="font-label-lg text-label-lg text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors transition-all duration-200 ease-in-out" href="#">Leaderboard</a>
+<a class="font-label-lg text-label-lg text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors transition-all duration-200 ease-in-out" href="#">Groups</a>
+<a class="font-label-lg text-label-lg text-primary dark:text-primary-fixed border-b-2 border-primary font-bold pb-1 transition-all duration-200 ease-in-out" href="#">My Predictions</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="bg-primary text-on-primary px-6 py-2 rounded-full font-label-lg transition-all hover:opacity-90">Sign In</button>
+</div>
+</div>
+</header>
+<main class="min-h-screen pb-20">
+<!-- Hero Section -->
+<section class="relative w-full py-12 bg-surface-container-lowest overflow-hidden">
+<div class="max-w-[1200px] mx-auto px-margin-desktop relative z-10">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary uppercase tracking-tight">RESULTADOS REALES - FASE FINAL</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2 max-w-2xl">Sigue el progreso oficial del torneo. Consulta los marcadores finales y el camino de las selecciones hacia la Gran Final del Mundial 2026.</p>
+</div>
+<div class="flex gap-4">
+<div class="bg-primary-container text-on-primary-container px-4 py-2 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+<span class="font-label-lg">Final: 19 de Julio</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Tournament Bracket Canvas -->
+<section class="max-w-[1400px] mx-auto mt-12 overflow-x-auto hide-scrollbar px-margin-desktop">
+<div class="min-w-[1200px] flex justify-between gap-8 py-10 relative">
+<!-- LEFT SIDE (Octavos -> Semis) -->
+<div class="flex gap-12 flex-1">
+<!-- Round of 16 (Left) -->
+<div class="flex flex-col justify-around gap-12">
+<div class="text-center mb-4"><span class="font-label-lg text-on-surface-variant uppercase tracking-widest">Octavos</span></div>
+<!-- Match 1 -->
+<div class="match-card bg-surface-container-lowest border border-outline-variant p-card-padding rounded-lg w-64 shadow-sm transition-all relative">
+<div class="flex justify-between items-center mb-2">
+<div class="flex items-center gap-3">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Small circular flag of Mexico, vibrant green, white and red colors with the central emblem, styled with a high-fidelity glossy finish for a premium sports app UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpOJVG9IH3dmeENAIB-gr-uxhVg3IJoXyAM4D_dZu8MZQLGFl0OLPyZXgQpQWVR_ZXhhsgQ15lZset_ir-_YDjmfZzYxklwGO5lwU_1jIGkj1inXA1T1zRR7NOy8v3vCTEKbXTIHd8UtFUId9_g5PJFsEzuORCtVdg6RIoBB0QdpLWTqmSdMz5Lc_pqRrOMAm-ZTxEWBrx4pP87lYMbmlvF_Cn8BIGiJby6dNSLb0xcKrs0ynnHiqp-XdbAvFL56Y-Li69qT4Bwp4">
+<span class="font-label-lg">MÉXICO</span>
+</div>
+<span class="font-score-display text-lg">2</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Small circular flag of Italy, vertical stripes of green, white, and red, high-definition textile texture, premium vector style for a FIFA tournament interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAs1iSxoneZ_wf_M1AVcoeCIRwkp6tT7a_htJ3aArwsXbgRIzIYgIBG3Gl0rgFc67j9J63zWhcd8HvlH4R14KzN8H2J0_lOSh9j2lBC8IyWknSiY2V_f94rjBVZ2dS034Bvj0tw5stBbz2dZGd02qnkpBiZBgpuPbErk_LwKyHhWlH28D7nGz35Xh0gS7j5f4qCKXDaQyCX-_SdMcM9mZlCr3KkpBRR2npAHzA-mwmpBLaIox8DsECgzHi92CU7B45SYMIDbH_C3cY">
+<span class="font-label-lg">ITALIA</span>
+</div>
+<span class="font-score-display text-lg">1</span>
+</div>
+</div>
+<!-- Match 2 -->
+<div class="match-card bg-surface-container-lowest border border-outline-variant p-card-padding rounded-lg w-64 shadow-sm transition-all">
+<div class="flex justify-between items-center mb-2">
+<div class="flex items-center gap-3">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Small circular flag of Argentina, light blue and white horizontal stripes with the golden Sun of May in the center, premium 3D effect for a sports leaderboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-ehVP2YSY1tPi8ZEMQI1blwF8O04QjWRF_3PdOQvFKy60NY8ZLoiIBKdxEMOoVtqqZMpLjF9qc8mPaBLRuwJdfcURbpHdwRfYt7TrQBAFBExkxkGoQcPlFfhyf5efu8ZAmz-ia47toFLgAUrAPJUftQGYkyumill8v-5nyV_n0T4PE3knd2sSngD75TUeD48rp7rhfM3BDQfxTITwdh0ot1V1ra150US7ZGhdNJ-oCYvYA7rk9kTsxrvs8l5Xv8y_bX76WMz8-cI">
+<span class="font-label-lg">ARGENTINA</span>
+</div>
+<span class="font-score-display text-lg">3</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Small circular flag of Croatia, red and white checkerboard pattern on the top stripe, vibrant and clean vector design for a professional knockout bracket." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpflg1GqZuEbxfdDortFbywqY8CQ0gwD1sbMyi7DWz1bAl8Hg23qo6ikuD1nG5McuxpuFYRu8GfevR7KhNL-8G6mDy55Zj7eAR6u9zih-lJCPMP4-ajN0niWAVMZTFAxq-riH2Ap2pdhBJqjfElAnzibzlZlt-LFTLs0DneBYHtcELrDDR4TLmLejoaiR6lg2qsVNLrpWAxJGmZy3EmyBZXXWNuJTMFZrPZ5iyaaSvTovhDxRh4VqtQjaPPqDMEmwj2c_pqoqg2P8">
+<span class="font-label-lg">CROACIA</span>
+</div>
+<span class="font-score-display text-lg">0</span>
+</div>
+</div>
+</div>
+<!-- Quarters (Left) -->
+<div class="flex flex-col justify-around">
+<div class="text-center mb-4"><span class="font-label-lg text-on-surface-variant uppercase tracking-widest">Cuartos</span></div>
+<div class="match-card bg-surface-container-lowest border-2 border-primary p-card-padding rounded-lg w-64 shadow-md transition-all relative">
+<div class="absolute -top-3 left-4 bg-primary text-on-primary px-2 py-0.5 rounded text-[10px] font-bold uppercase">En Vivo</div>
+<div class="flex justify-between items-center mb-2">
+<div class="flex items-center gap-3">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Flag of Mexico circular icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsfGLLeTFBQy_mpVowfe1JIdKkD9DYVMSIZdA0TLTcHZDdIZJ7hhZJivjl7KnT8C3ZKqsU7NvOGhvMuwNF6GsogaBdwYhsvgdgcydywrHxmwFpeAWXeHInSnkyZUZ1Q5FXna-BUPZs76xLQQRozLRg8eTub431Uq17Y-IoW1h1A_YtfHQiApfnqtQAKWkY-dgGRaoMaU0-XoNiJYXfNE_PiJFmQkxKq6mORUv49VHiY_r8jzpBKp73D819lNRpMM9U43tNHqkLTV4">
+<span class="font-label-lg">MÉXICO</span>
+</div>
+<span class="font-score-display text-lg text-primary">0</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Flag of Argentina circular icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1FEeXRMRIr9VYFKoVcv-yCt6wD9QtwE5QkmO7sNC8qXidGuZqYJfmU-WlMkhX6RyBJVVBcqeBkUAgm9Qzdr3rtQcNk6LSrqX-isOtz1b3j1ewKid91D1V3__rVAK7yYrinbp1gPsX6vkJQoHq9QqVZLngWLLxTazggQv2z5BEwgNo3pLoW9-vnVm-S0F84T5JWRMluhFfYfmlnbVbppZjSH8QI-0uK-zc2YKizDeVY3sR0if8vyA2oK3HbVxYo3a_0ySSvTRzp3w">
+<span class="font-label-lg">ARGENTINA</span>
+</div>
+<span class="font-score-display text-lg text-primary">1</span>
+</div>
+</div>
+</div>
+</div>
+<!-- CENTER (Semi-Finals & Final) -->
+<div class="flex flex-col items-center justify-center gap-16 px-12">
+<div class="text-center">
+<span class="font-label-lg text-primary font-black uppercase tracking-[0.2em]">Semifinales</span>
+</div>
+<!-- Final Match -->
+<div class="flex flex-col items-center">
+<div class="mb-8 text-center">
+<div class="font-display-lg text-display-lg text-primary opacity-20 absolute -z-10 blur-sm pointer-events-none">2026</div>
+<span class="font-headline-lg text-headline-lg text-primary uppercase">Gran Final</span>
+<p class="font-label-md text-on-surface-variant">MetLife Stadium, New Jersey</p>
+</div>
+<div class="flex items-center gap-12">
+<!-- Semi Winner Left -->
+<div class="w-48 h-24 bg-surface-container-high border border-dashed border-outline rounded-xl flex items-center justify-center">
+<span class="text-on-surface-variant font-label-lg opacity-50">Ganador Semi 1</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-display-lg text-primary">VS</span>
+<div class="mt-4 bg-surface-container-highest text-on-surface-variant px-6 py-2 rounded-full font-bold border border-outline-variant uppercase tracking-widest text-label-md">Próximamente</div>
+</div>
+<!-- Semi Winner Right -->
+<div class="w-48 h-24 bg-surface-container-high border border-dashed border-outline rounded-xl flex items-center justify-center">
+<span class="text-on-surface-variant font-label-lg opacity-50">Ganador Semi 2</span>
+</div>
+</div>
+<!-- Trophy Asset -->
+<div class="mt-12 w-32 h-32 flex items-center justify-center">
+<span class="material-symbols-outlined text-[80px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">trophy</span>
+</div>
+</div>
+</div>
+<!-- RIGHT SIDE (Octavos -> Semis) -->
+<div class="flex gap-12 flex-1 flex-row-reverse">
+<!-- Round of 16 (Right) -->
+<div class="flex flex-col justify-around gap-12">
+<div class="text-center mb-4"><span class="font-label-lg text-on-surface-variant uppercase tracking-widest">Octavos</span></div>
+<!-- Match 3 -->
+<div class="match-card bg-surface-container-lowest border border-outline-variant p-card-padding rounded-lg w-64 shadow-sm transition-all">
+<div class="flex justify-between items-center mb-2">
+<div class="flex items-center gap-3">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Small circular flag of France, blue, white, and red vertical stripes, sharp high-resolution colors for a pro sports UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLSNRPEBDpBlAqrqMO9qxAXlaeWjjy0b2Ls2zUFVHMPvwMU2ClLFYubj0SCQZZWmarTbB6s8n3dnZwBHg2aW0DyhFUxBdht9H8jOlZxJDK9rKFfDS-xW_4mSTqbuctWgamMY7nqMXdw1hEcpD5kIflEQqc4A-v5r4ggtnZxgbfhJLn0PPsLj2bqSWZoHRTTSdMfYyERZ0yoHUtUMCh6WfYuW0K9Nfd6d3s9t3NUK6RHtc3LF86Wfyw2se3Zw2qYfSMNTvA8tpKb5Y">
+<span class="font-label-lg">FRANCIA</span>
+</div>
+<span class="font-score-display text-lg">2</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Small circular flag of Morocco, red field with a green pentagram star, clean and vibrant vector illustration for a tournament match card." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0Rfgy4JnUjqd-iynItKccwnO5HdZXXMl84uQc5PfeGOlqbGQSKBYrCqL6ZMN0acnvFufgNt4OFLVmCy7071QFT8i4H7dEDQSLneQu7W7NOOfdzsR8ubGYvuWlOh_g3NO36yIMoODbwimy8aU8MOcQFKOMMT8ddOXU-ZhhxU_1fX3BVEJz-sE450aB3JeiLmW8l0jnXXRaD92ncT6F9z0CauEFZN7kxGP94eMGq_WWOcOpN-uQumv5CabDNO3ACPU5hbjxgdKaxBE">
+<span class="font-label-lg">MARRUECOS</span>
+</div>
+<span class="font-score-display text-lg">0</span>
+</div>
+</div>
+<!-- Match 4 -->
+<div class="match-card bg-surface-container-lowest border border-outline-variant p-card-padding rounded-lg w-64 shadow-sm transition-all">
+<div class="flex justify-between items-center mb-2">
+<div class="flex items-center gap-3">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Small circular flag of Brazil, green field with a yellow rhombus and blue globe, high-end glossy finish for a FIFA world cup app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDylT8lU7iczuHQrCl8lPARg97B3u7uJfqEmcRP7jkNZA8-rvcsOnLrV15xV7oZF_mUn7z6XiFK_mXLSyBmiaA2rCYtwjfv8fJk3DFRPCQE5bbN6g_ODDhWpFDyWrM3efA1s7mxZfkAgrl4wj4IfAhPIDVFAy9o7JrQzNwn1hhh66bMk4-53O7Uk_LUyaldFyjS2BnXxVEw_5BtfK7_MnQntIcmi1xK2v0MWgkQsupjpgMVQeq33QU9x5dLHPIoASdM8uVIkHX0KtI">
+<span class="font-label-lg">BRASIL</span>
+</div>
+<span class="font-score-display text-lg">4</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Small circular flag of Japan, white field with a red solar disk, minimalist and clean aesthetic for an interactive bracket interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDD802i2fdiEtUdds0kpbBOqnGsdWndZGpPjhR29_O9I6O5XMN8cuB-rNdj_ES1HoK9RpXxDFT_BFAq2bsVSN9T6R-q6giIALY_nu_isM5v7DTmiYPloHZLVZJzP0Ihyd-7_8S7jIVijUY2XHEh8rxCRI7ABe_xCilp288TrIVwkT9S8EBevsQz5kTchOVZ_b-l9FzDEULU41PsCqn-GkkTxCclvPn_payOhUn8sNpNRFYCRlRlqa1b8OIPvUtiBy75O-tpcYwB4HI">
+<span class="font-label-lg">JAPÓN</span>
+</div>
+<span class="font-score-display text-lg">1</span>
+</div>
+</div>
+</div>
+<!-- Quarters (Right) -->
+<div class="flex flex-col justify-around">
+<div class="text-center mb-4"><span class="font-label-lg text-on-surface-variant uppercase tracking-widest">Cuartos</span></div>
+<div class="match-card bg-surface-container-lowest border border-outline-variant p-card-padding rounded-lg w-64 shadow-sm transition-all">
+<div class="flex justify-between items-center mb-2">
+<div class="flex items-center gap-3">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Flag of France circular icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADoxLnoHVYJsUwOjzuvwP_3HGE6ztuF6ddStPXbY_IsSMkYxwUC-9D5hevW9yBqbq_9o7dMwM97fN4Wf_vkQaOrDTJ4ddDz52XY8zotaekO6NAz1hPH5jVGw5F3uZsEZ3--fYBHBV2VA1K3dPxzupLA4G2IWkR8LkGN1L-7ZgfFP0U6PdbMrV-3uSerXZKmV4ODGkJp_wjOU__p6K-EvXEQFb-z6XJjjVcaJWdy16UTnteXj_0WBt72Pru5x6aX-P-n-OmqzMzhAw">
+<span class="font-label-lg">FRANCIA</span>
+</div>
+<span class="font-score-display text-lg text-outline">--</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Flag of Brazil circular icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrHS6c0dKnmFDoDPeU0WPXpjUwDQ59cwfmslWGIlnUdfEej4b4lPRBvx4uqLtJQ4OKaBLJADpNQDdo8p4uNNKKMLKwvZodfnibSfj9UvmyRqcOwAGXKysmKkRqnJjOghZiG-OWcril48OGRgJ7wl_wqsEya_UWLQODWnSdZPw_cI_RAnOkd-JnaKu2d3ObV9ch2vYFLUppSmSJelAqAEqoh8WF669xV6ArLgd15qXsjxaSWXgQsEVn73ySoBC_si0oFekf_kJFkeY">
+<span class="font-label-lg">BRASIL</span>
+</div>
+<span class="font-score-display text-lg text-outline">--</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Stats and Social Section -->
+<section class="max-w-[1200px] mx-auto mt-20 px-margin-desktop">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Most Predicted Winner -->
+<div class="bg-surface-container rounded-xl p-6 border border-outline-variant">
+<h3 class="font-headline-md text-headline-md text-primary mb-4">Equipo del Torneo</h3>
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-lg bg-cover bg-center" data-alt="Close up high-resolution photo of a FIFA 2026 soccer ball on a lush green grass pitch, soft morning sunlight creating long shadows and highlighting the texture of the ball and grass." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAFfvkWk3SymfLYzSYUVD7K2_iHvd67n7pcmb12XM24t5Cv76Wc9lFszrenA0d0Z_PnVZ_Bnxx926oNPFcKbKLSXjTtxMkKLQ7N-_hIAMwZQqp6euOV656i2Ush13SHA9A59qC0GTYbYMYyPqPyXhTV-S4iigfdi8zNVIb7V8m3eZ6Hufui4VIfibEjxnLVoyelAnYNHL6DY6Gs5itrR8WJ7m4Fn7J0oco4JrTllXstv-lOXNcuglzcvT0bEGQJ0f26cd3XfQlSCMQ')"></div>
+<div>
+<p class="font-label-lg">Brasil</p>
+<div class="w-full bg-surface-dim h-2 rounded-full mt-1">
+<div class="bg-primary h-full rounded-full w-[42%]"></div>
+</div>
+<p class="text-label-md mt-1">42% de los usuarios</p>
+</div>
+</div>
+</div>
+<!-- Your Rank -->
+<div class="bg-primary text-on-primary rounded-xl p-6 shadow-xl">
+<h3 class="font-headline-md text-headline-md mb-2">Ranking de Aciertos</h3>
+<div class="flex justify-between items-end">
+<div>
+<span class="text-[40px] font-black leading-none">#1,240</span>
+<p class="font-label-lg opacity-80">Top 5% Global</p>
+</div>
+<span class="material-symbols-outlined text-4xl">trending_up</span>
+</div>
+</div>
+<!-- Next Match -->
+<div class="bg-surface-container-highest rounded-xl p-6 border border-outline-variant">
+<h3 class="font-headline-md text-headline-md text-secondary mb-4">Siguiente Partidazo</h3>
+<div class="flex justify-between items-center">
+<div class="text-center">
+<img class="w-10 h-10 mx-auto mb-2 rounded-full" data-alt="Flag icon Argentina" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDj2V4hbq0zI1JPW5i4hFSaqmnoVgqOTkiGDjZdb5xHIIFVm6tKvOFPTah6uDMie1PVW4Zwu54qe01UNdlukj-BrDOEahUiTcq59BEEjI0kqg2JjJD9juI_DGQhzIyvS5-V2pgcshhgrl8gCVbdoodvWjFjibT3umEmcjzVQcQT6D0IkJv5vK9fOjJ3OCOnBHzqR9vX37qew8_1XiWOyExHYlyxfqFuP_dTgbdKUCqgebLY9QvtGYiMQDhu7vU09TWUyT1wz55Dfg0">
+<span class="font-label-md">ARG</span>
+</div>
+<div class="text-center">
+<span class="font-label-lg text-primary">HOY</span>
+<span class="block text-xl font-bold">20:00</span>
+</div>
+<div class="text-center">
+<img class="w-10 h-10 mx-auto mb-2 rounded-full" data-alt="Flag icon Mexico" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBc5tw_ZbW2r0d0IvuL5OIl2i_KANE8KyWIrxeuvTYYEeU9_IZCxpJ7lhPGGg8bEt17J_AqCJOQKjXTMUlab1oRISz_3bSUFFS2-SxN7v_JO8SLG--sBbJQB4Ny08gKt3fbZkOENa1VFtubJwiKwQG_Q1bVGRPj3R-B0SpQ79oWOEqlIW39Q-NcTLhhmy8OhLtYOXt6a-aBI7j3537ySL_e_ExddVIgfwLNuxJYb8F4-Y6XbPjz04NtpdFNPrkee6nKQ77dBoZqEGM">
+<span class="font-label-md">MEX</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-8 bg-surface-container-lowest dark:bg-on-surface border-t border-outline-variant">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-desktop max-w-[1200px] mx-auto gap-6">
+<div class="font-headline-md text-headline-md text-primary">
+                World Cup Predictor
+            </div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:underline hover:text-primary transition-all duration-200" href="#">Support</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:underline hover:text-primary transition-all duration-200" href="#">Rules</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:underline hover:text-primary transition-all duration-200" href="#">Privacy Policy</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:underline hover:text-primary transition-all duration-200" href="#">Terms of Service</a>
+</div>
+<div class="font-body-md text-body-md text-secondary dark:text-secondary-fixed opacity-90">
+                © 2026 World Cup Predictor. All rights reserved.
+            </div>
+</div>
+</footer>
+<script>
+        // Simple interactivity for the bracket navigation or prediction
+        document.querySelectorAll('.match-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const teams = card.querySelectorAll('.font-label-lg');
+                console.log(`Predicting for: ${teams[0].textContent} vs ${teams[1].textContent}`);
+                // Modal or prediction input logic would go here
+            });
+        });
+    </script>
+
+
+</body></html>

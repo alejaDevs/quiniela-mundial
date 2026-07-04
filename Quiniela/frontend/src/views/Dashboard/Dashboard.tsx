@@ -347,7 +347,11 @@ export const Dashboard = (): ReactElement => {
   };
 
   const allPending: IMatch[] = matches.filter(
-    (m: IMatch): boolean => !m.isFinished && !predictionsByMatchId.has(m.id),
+    (m: IMatch): boolean =>
+      !m.isFinished &&
+      !predictionsByMatchId.has(m.id) &&
+      m.homeTeam.countryCode !== "un" &&
+      m.awayTeam.countryCode !== "un",
   );
 
   const stagesWithMatches: MatchStage[] = ORDERED_STAGES.filter(
