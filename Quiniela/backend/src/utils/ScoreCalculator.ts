@@ -1,4 +1,4 @@
-import { MatchStage } from '../models/Match';
+import { MatchStage } from "../models/Match";
 
 export interface IScoreInput {
   predictedHomeScore: number;
@@ -14,7 +14,6 @@ export const calculatePredictionPoints = (input: IScoreInput): number => {
     predictedAwayScore,
     actualHomeScore,
     actualAwayScore,
-    stage,
   } = input;
 
   const isExact =
@@ -24,9 +23,9 @@ export const calculatePredictionPoints = (input: IScoreInput): number => {
   if (isExact) return 5;
 
   const predictedOutcome = Math.sign(predictedHomeScore - predictedAwayScore);
-  const actualOutcome    = Math.sign(actualHomeScore    - actualAwayScore);
+  const actualOutcome = Math.sign(actualHomeScore - actualAwayScore);
 
   if (predictedOutcome === actualOutcome && predictedOutcome !== 0) return 3;
-  if (predictedOutcome === 0 && actualOutcome === 0)                return 2;
+  if (predictedOutcome === 0 && actualOutcome === 0) return 2;
   return 0;
 };
