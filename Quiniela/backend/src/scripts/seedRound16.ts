@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import { connectDatabase, disconnectDatabase } from "../config/Database";
 import { MatchModel, IMatch } from "../models/Match";
+import { linkBracketMatches } from "./linkBracketMatches";
 
 dotenv.config();
 
@@ -268,6 +269,8 @@ const seed = async (): Promise<void> => {
   );
 
   await disconnectDatabase();
+  await linkBracketMatches();
+
   // eslint-disable-next-line no-console
   console.log("[SeedR16] Listo");
 };

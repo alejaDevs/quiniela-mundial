@@ -1,4 +1,4 @@
-import { Schema, model, Model, Document } from "mongoose";
+import { Schema, model, Model, Document, Types } from "mongoose";
 
 export type MatchStage =
   | "group"
@@ -26,6 +26,10 @@ export interface IMatch {
   apiFootballId: number | null;
   stadium: string | null;
   city: string | null;
+  nextMatchId: Types.ObjectId | null;
+  nextMatchSlot: 'home' | 'away' | null;
+  loserNextMatchId: Types.ObjectId | null;
+  loserNextMatchSlot: 'home' | 'away' | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -72,6 +76,10 @@ const MatchSchema: Schema<IMatchDocument> = new Schema<IMatchDocument>(
     apiFootballId: { type: Number, default: null },
     stadium: { type: String, default: null, trim: true },
     city: { type: String, default: null, trim: true },
+    nextMatchId: { type: Schema.Types.ObjectId, ref: 'Match', default: null },
+    nextMatchSlot: { type: String, enum: ['home', 'away'], default: null },
+    loserNextMatchId: { type: Schema.Types.ObjectId, ref: 'Match', default: null },
+    loserNextMatchSlot: { type: String, enum: ['home', 'away'], default: null },
   },
   { timestamps: true },
 );

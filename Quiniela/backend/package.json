@@ -11,6 +11,7 @@
     "seed": "ts-node --transpile-only src/scripts/seedMatches.ts",
     "seed:round32": "ts-node --transpile-only src/scripts/seedRound32.ts",
     "seed:round16": "ts-node --transpile-only src/scripts/seedRound16.ts",
+    "link:bracket": "ts-node --transpile-only src/scripts/linkBracketMatches.ts",
     "lint": "eslint \"src/**/*.ts\""
   },
   "engines": {

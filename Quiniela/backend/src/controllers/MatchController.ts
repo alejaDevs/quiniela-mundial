@@ -294,6 +294,20 @@ export const updateMatchResult = async (
         const stage: MatchStage = updated.stage;
         if (stage === 'group') return;
 
+        // Propagate winner (and loser for semis) to next round matches
+        if (updated.nextMatchId && updated.homeScore !== null && updated.awayScore !== null) {
+          const winner = updated.homeScore >= updated.awayScore ? updated.homeTeam : updated.awayTeam;
+          const loser  = updated.homeScore >= updated.awayScore ? updated.awayTeam : updated.homeTeam;
+
+          const winnerField = updated.nextMatchSlot === 'home' ? 'homeTeam' : 'awayTeam';
+          await MatchModel.findByIdAndUpdate(updated.nextMatchId, { [winnerField]: winner });
+
+          if (updated.loserNextMatchId && updated.loserNextMatchSlot) {
+            const loserField = updated.loserNextMatchSlot === 'home' ? 'homeTeam' : 'awayTeam';
+            await MatchModel.findByIdAndUpdate(updated.loserNextMatchId, { [loserField]: loser });
+          }
+        }
+
         if (stage === 'final' || stage === 'third_place') {
           const [finalPending, thirdPending] = await Promise.all([
             MatchModel.countDocuments({ stage: 'final', isFinished: false }),
