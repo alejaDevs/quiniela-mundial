@@ -256,19 +256,19 @@ export const Bracket = (): ReactElement => {
   //             [4]=Portugal/España,  [5]=EE.UU/Bélgica,
   //             [6]=Argentina/Egipto, [7]=Suiza/Colombia
   //
-  // QF sorted:  [0]=M99 (Llaves 3&4, Lado B top),  [1]=M97 (Llaves 1&2, Lado A top)
-  //             [2]=M100 (Llaves 7&8, Lado B bot),  [3]=M98 (Llaves 5&6, Lado A bot)
+  // QF sorted:  [0]=M97 (09-jul, Llaves 1&2, Lado A top), [1]=M98 (10-jul, Llaves 5&6, Lado A bot)
+  //             [2]=M99 (11-jul 14:00, Llaves 3&4, Lado B top), [3]=M100 (11-jul 18:00, Llaves 7&8, Lado B bot)
   //
   // SF sorted:  [0]=M101 (Lado A: M97 vs M98), [1]=M102 (Lado B: M99 vs M100)
 
   // LEFT side (Lado A): Llaves 1,2 top + Llaves 5,6 bottom
   const r16L = [r16All[0], r16All[1], r16All[4], r16All[5]];
-  const qfL  = [qfAll[1], qfAll[3]]; // M97, M98
+  const qfL  = [qfAll[0], qfAll[1]]; // M97, M98
   const sfL  = sfAll.slice(0, 1);    // M101
 
   // RIGHT side (Lado B): Llaves 3,4 top + Llaves 7,8 bottom
   const sfR  = sfAll.slice(1, 2);    // M102
-  const qfR  = [qfAll[0], qfAll[2]]; // M99, M100
+  const qfR  = [qfAll[2], qfAll[3]]; // M99, M100
   const r16R = [r16All[2], r16All[3], r16All[6], r16All[7]];
 
   return (
