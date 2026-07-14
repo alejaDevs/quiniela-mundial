@@ -23,6 +23,15 @@ export interface IMatch {
   homeScore: number | null;
   awayScore: number | null;
   isFinished: boolean;
+  // Resultado final (posterior al minuto 90: tiempo extra/penales), usado
+  // únicamente para determinar el ganador que avanza de ronda. homeScore/
+  // awayScore siguen siendo el marcador de 90' con el que se puntúan los
+  // pronósticos.
+  finalHomeScore: number | null;
+  finalAwayScore: number | null;
+  // Ganador explícito cuando finalHomeScore/finalAwayScore quedan empatados
+  // (ej. definición por penales).
+  winnerSide: 'home' | 'away' | null;
   apiFootballId: number | null;
   stadium: string | null;
   city: string | null;
@@ -73,6 +82,9 @@ const MatchSchema: Schema<IMatchDocument> = new Schema<IMatchDocument>(
     homeScore: { type: Number, default: null, min: 0 },
     awayScore: { type: Number, default: null, min: 0 },
     isFinished: { type: Boolean, required: true, default: false },
+    finalHomeScore: { type: Number, default: null, min: 0 },
+    finalAwayScore: { type: Number, default: null, min: 0 },
+    winnerSide: { type: String, enum: ['home', 'away'], default: null },
     apiFootballId: { type: Number, default: null },
     stadium: { type: String, default: null, trim: true },
     city: { type: String, default: null, trim: true },

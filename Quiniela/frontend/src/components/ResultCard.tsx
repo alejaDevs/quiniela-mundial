@@ -1,15 +1,25 @@
-import { ReactElement, CSSProperties, useState } from "react";
+import { ReactElement, CSSProperties, useState, useRef } from "react";
+import { toPng } from "html-to-image";
 import { Theme } from "../Theme";
 import { IMatch, IMatchPredictionEntry } from "../types/Index";
 import { FlagIcon } from "./FlagIcon";
+import { ShareableMatchCard } from "./ShareableMatchCard";
 import { apiGet } from "../utils/ApiClient";
 import { adaptMatchPredictionListFromApi } from "../adapters/MatchPredictionAdapter";
+import { getStageLabel } from "../utils/StageLabel";
 import {
   getMatchStatus,
   getMatchStatusLabel,
   MatchStatus,
 } from "../utils/MatchStatus";
 import { useIsMobile } from "../utils/UseIsMobile";
+
+const waitForNextPaint = (): Promise<void> =>
+  new Promise((resolve: () => void): void => {
+    requestAnimationFrame((): void => {
+      requestAnimationFrame((): void => resolve());
+    });
+  });
 
 interface IResultCardProps {
   match: IMatch;
@@ -135,6 +145,8 @@ const expandRowStyle: CSSProperties = {
   borderTop: `1px solid ${Theme.Colors.surfaceContainer}`,
   display: "flex",
   justifyContent: "center",
+  gap: Theme.Spacing.xl,
+  flexWrap: "wrap",
 };
 
 const expandButtonStyle: CSSProperties = {
@@ -227,22 +239,20 @@ export const ResultCard = ({ match }: IResultCardProps): ReactElement => {
   const [entries, setEntries] = useState<IMatchPredictionEntry[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [generatingImage, setGeneratingImage] = useState<boolean>(false);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const shareCardRef = useRef<HTMLDivElement>(null);
 
   const status: MatchStatus = getMatchStatus(match);
   const statusLabel: string = getMatchStatusLabel(status);
-  const STAGE_LABELS: Record<string, string> = {
-    group: "Fase de Grupos",
-    round_of_32: "16avos de Final",
-    round_of_16: "Octavos de Final",
-    quarter_final: "Cuartos de Final",
-    semi_final: "Semifinales",
-    third_place: "3er Lugar",
-    final: "Final",
+  const stageLabel: string = getStageLabel(match);
+
+  const fetchEntries = async (): Promise<IMatchPredictionEntry[]> => {
+    const response: IPredictionsResponse = await apiGet<IPredictionsResponse>(
+      `/api/matches/${match.id}/predictions`,
+    );
+    return adaptMatchPredictionListFromApi(response.predictions);
   };
-  const stageLabel: string =
-    match.groupLabel !== null
-      ? `Grupo ${match.groupLabel}`
-      : (STAGE_LABELS[match.stage] ?? match.stage);
 
   const handleToggle = async (): Promise<void> => {
     const next: boolean = !expanded;
@@ -253,10 +263,7 @@ export const ResultCard = ({ match }: IResultCardProps): ReactElement => {
     setLoading(true);
     setError(null);
     try {
-      const response: IPredictionsResponse = await apiGet<IPredictionsResponse>(
-        `/api/matches/${match.id}/predictions`,
-      );
-      setEntries(adaptMatchPredictionListFromApi(response.predictions));
+      setEntries(await fetchEntries());
     } catch (err: unknown) {
       const message: string =
         typeof err === "object" && err !== null && "message" in err
@@ -265,6 +272,61 @@ export const ResultCard = ({ match }: IResultCardProps): ReactElement => {
       setError(message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownloadImage = async (): Promise<void> => {
+    setGeneratingImage(true);
+    setImageError(null);
+    try {
+      let dataEntries: IMatchPredictionEntry[] = entries ?? [];
+      if (entries === null) {
+        dataEntries = await fetchEntries();
+        setEntries(dataEntries);
+        await waitForNextPaint();
+      }
+
+      if (shareCardRef.current === null) {
+        return;
+      }
+      const dataUrl: string = await toPng(shareCardRef.current, {
+        pixelRatio: 2,
+        cacheBust: true,
+      });
+      const fileName = `quiniela-${match.homeTeam.countryCode}-vs-${match.awayTeam.countryCode}.png`;
+
+      // navigator.share requires an active user gesture, which can expire
+      // during the async work above; a failure here (including the user
+      // cancelling the share sheet) should fall back to a plain download
+      // instead of surfacing an error — the image was generated either way.
+      try {
+        if (navigator.share !== undefined && navigator.canShare !== undefined) {
+          const blob: Blob = await (await fetch(dataUrl)).blob();
+          const file = new File([blob], fileName, { type: "image/png" });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: `${match.homeTeam.name} vs ${match.awayTeam.name}`,
+            });
+            return;
+          }
+        }
+      } catch {
+        // fall through to download
+      }
+
+      const link: HTMLAnchorElement = document.createElement("a");
+      link.href = dataUrl;
+      link.download = fileName;
+      link.click();
+    } catch (err: unknown) {
+      const message: string =
+        typeof err === "object" && err !== null && "message" in err
+          ? String((err as { message: unknown }).message)
+          : "No se pudo generar la imagen";
+      setImageError(message);
+    } finally {
+      setGeneratingImage(false);
     }
   };
 
@@ -346,7 +408,35 @@ export const ResultCard = ({ match }: IResultCardProps): ReactElement => {
               {expanded ? "expand_less" : "expand_more"}
             </span>
           </button>
+          <button
+            type="button"
+            disabled={generatingImage}
+            onClick={(): void => {
+              void handleDownloadImage();
+            }}
+            style={{
+              ...expandButtonStyle,
+              opacity: generatingImage ? 0.6 : 1,
+            }}
+          >
+            {generatingImage ? "Generando…" : "Descargar imagen"}
+            <span className="material-symbols-outlined">download</span>
+          </button>
         </div>
+        {imageError !== null ? (
+          <div style={messageStyle}>{imageError}</div>
+        ) : null}
+      </div>
+
+      <div
+        style={{ position: "fixed", top: 0, left: "-10000px" }}
+        aria-hidden="true"
+      >
+        <ShareableMatchCard
+          ref={shareCardRef}
+          match={match}
+          entries={entries ?? []}
+        />
       </div>
 
       {expanded ? (

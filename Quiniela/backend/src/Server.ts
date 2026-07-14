@@ -7,6 +7,7 @@ import { MatchRoutes } from './routes/MatchRoutes';
 import { PredictionRoutes } from './routes/PredictionRoutes';
 import { LeaderboardRoutes } from './routes/LeaderboardRoutes';
 import { SyncRoutes } from './routes/SyncRoutes';
+import { UserRoutes } from './routes/UserRoutes';
 import { errorHandler } from './middlewares/ErrorMiddleware';
 import { startKnockoutSyncCron } from './crons/KnockoutSyncCron';
 
@@ -27,6 +28,7 @@ const buildApp = (): Application => {
   app.use('/api/predictions', PredictionRoutes);
   app.use('/api/leaderboard', LeaderboardRoutes);
   app.use('/api/sync', SyncRoutes);
+  app.use('/api/users', UserRoutes);
 
   app.use(errorHandler);
 

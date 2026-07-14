@@ -4,7 +4,14 @@ import { MatchModel, IMatchDocument, MatchStage } from '../models/Match';
 import { PredictionModel, IPredictionDocument } from '../models/Prediction';
 import { PhaseSnapshotModel } from '../models/PhaseSnapshot';
 import { calculatePredictionPoints } from '../utils/ScoreCalculator';
-import { computeAndSaveSnapshot, ORDERED_KNOCKOUT_STAGES } from '../services/SnapshotService';
+import { computeAndSaveSnapshot } from '../services/SnapshotService';
+import {
+  PHASE_STAGES,
+  PHASE_NAMES,
+  ORDERED_KNOCKOUT_STAGES,
+  stageToPhaseKey,
+  isPhaseKey
+} from '../config/Phases';
 
 interface ILeaderboardEntry {
   userId: string;
@@ -25,24 +32,6 @@ interface IPhaseLeaderboardEntry {
   rank: number;
 }
 
-const PHASE_STAGES: Record<string, MatchStage[]> = {
-  group:         ['group'],
-  round_of_32:   ['round_of_32'],
-  round_of_16:   ['round_of_16'],
-  quarter_final: ['quarter_final'],
-  semi_final:    ['semi_final'],
-  final_all:     ['final', 'third_place'],
-};
-
-const PHASE_NAMES: Record<string, string> = {
-  group:         'Fase de Grupos',
-  round_of_32:   '16vos de Final',
-  round_of_16:   'Octavos de Final',
-  quarter_final: 'Cuartos de Final',
-  semi_final:    'Semifinales',
-  final_all:     'Final',
-};
-
 const detectActivePhaseKey = (allMatches: IMatchDocument[]): string => {
   const activeStage: MatchStage | undefined = ORDERED_KNOCKOUT_STAGES.find(
     (s: MatchStage): boolean =>
@@ -50,10 +39,7 @@ const detectActivePhaseKey = (allMatches: IMatchDocument[]): string => {
   );
 
   if (activeStage !== undefined) {
-    if (activeStage === 'final' || activeStage === 'third_place') {
-      return 'final_all';
-    }
-    return activeStage;
+    return stageToPhaseKey(activeStage) ?? activeStage;
   }
 
   const lastStage: MatchStage | undefined = [...ORDERED_KNOCKOUT_STAGES]
@@ -63,10 +49,7 @@ const detectActivePhaseKey = (allMatches: IMatchDocument[]): string => {
     );
 
   if (lastStage !== undefined) {
-    if (lastStage === 'final' || lastStage === 'third_place') {
-      return 'final_all';
-    }
-    return lastStage;
+    return stageToPhaseKey(lastStage) ?? lastStage;
   }
 
   return 'round_of_32';
@@ -81,8 +64,8 @@ export const getLeaderboard = async (
     const allMatches: IMatchDocument[] = await MatchModel.find().lean<IMatchDocument[]>();
 
     const activePhase: string = detectActivePhaseKey(allMatches);
-    const activeStages: MatchStage[] = PHASE_STAGES[activePhase] ?? [];
-    const activePhaseName: string = PHASE_NAMES[activePhase] ?? activePhase;
+    const activeStages: MatchStage[] = isPhaseKey(activePhase) ? PHASE_STAGES[activePhase] : [];
+    const activePhaseName: string = isPhaseKey(activePhase) ? PHASE_NAMES[activePhase] : activePhase;
 
     const activeMatchIds: Set<string> = new Set(
       allMatches
@@ -156,11 +139,11 @@ export const getLeaderboardByPhase = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const phases: MatchStage[] | undefined = PHASE_STAGES[req.params.phase];
-    if (phases === undefined) {
+    if (!isPhaseKey(req.params.phase)) {
       res.status(400).json({ message: 'Invalid phase' });
       return;
     }
+    const phases: MatchStage[] = PHASE_STAGES[req.params.phase];
 
     const [users, stageMatches, predictions] = await Promise.all([
       UserModel.find({ isAdmin: false, isActive: { $ne: false } }).lean<IUserDocument[]>(),

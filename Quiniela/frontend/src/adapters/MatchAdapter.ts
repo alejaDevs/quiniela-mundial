@@ -16,6 +16,9 @@ interface IRawMatch {
   homeScore?: number | null;
   awayScore?: number | null;
   isFinished?: boolean;
+  finalHomeScore?: number | null;
+  finalAwayScore?: number | null;
+  winnerSide?: 'home' | 'away' | null;
   updatedAt?: string;
   stadium?: string | null;
   city?: string | null;
@@ -57,6 +60,9 @@ export const adaptMatchFromApi = (raw: unknown): IMatch => {
     homeScore: typeof data.homeScore === 'number' ? data.homeScore : null,
     awayScore: typeof data.awayScore === 'number' ? data.awayScore : null,
     isFinished: data.isFinished,
+    finalHomeScore: typeof data.finalHomeScore === 'number' ? data.finalHomeScore : null,
+    finalAwayScore: typeof data.finalAwayScore === 'number' ? data.finalAwayScore : null,
+    winnerSide: data.winnerSide === 'home' || data.winnerSide === 'away' ? data.winnerSide : null,
     updatedAt:
       typeof data.updatedAt === 'string' ? data.updatedAt : new Date(0).toISOString(),
     stadium: typeof data.stadium === 'string' ? data.stadium : null,

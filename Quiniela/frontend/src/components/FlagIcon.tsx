@@ -20,6 +20,7 @@ export const FlagIcon = ({
       alt={alt}
       width={width}
       height={Math.round(width * 0.7)}
+      crossOrigin="anonymous"
       style={{
         objectFit: 'cover',
         borderRadius: Theme.Radii.sm,

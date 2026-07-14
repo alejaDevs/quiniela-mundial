@@ -12,13 +12,13 @@ import { adaptMatchListFromApi } from "../../adapters/MatchAdapter";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
+// Cuartos de Final en adelante (cuartos, semis, 3er lugar y final) se juegan
+// como una sola liga: los puntos se acumulan sin reiniciar hasta el final.
 type PhaseKey =
   | "group"
   | "round_of_32"
   | "round_of_16"
-  | "quarter_final"
-  | "semi_final"
-  | "final_all";
+  | "quarter_final";
 
 interface IPhaseLeaderboardEntry {
   userId: string;
@@ -54,22 +54,18 @@ const PHASE_TABS: ReadonlyArray<{ key: PhaseKey; label: string }> = [
   { key: "group",         label: "Fase de Grupos" },
   { key: "round_of_32",   label: "16vos de Final" },
   { key: "round_of_16",   label: "Octavos de Final" },
-  { key: "quarter_final", label: "Cuartos de Final" },
-  { key: "semi_final",    label: "Semifinales" },
-  { key: "final_all",     label: "Final" },
+  { key: "quarter_final", label: "Cuartos de Final en Adelante" },
 ];
 
 const PHASE_STAGES: Record<PhaseKey, MatchStage[]> = {
   group:         ["group"],
   round_of_32:   ["round_of_32"],
   round_of_16:   ["round_of_16"],
-  quarter_final: ["quarter_final"],
-  semi_final:    ["semi_final"],
-  final_all:     ["final", "third_place"],
+  quarter_final: ["quarter_final", "semi_final", "third_place", "final"],
 };
 
 const ORDERED_PHASES: PhaseKey[] = [
-  "group", "round_of_32", "round_of_16", "quarter_final", "semi_final", "final_all",
+  "group", "round_of_32", "round_of_16", "quarter_final",
 ];
 
 const AVATAR_COLORS: ReadonlyArray<{ bg: string; text: string }> = [

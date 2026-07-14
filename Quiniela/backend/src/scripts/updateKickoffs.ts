@@ -19,6 +19,27 @@ const UPDATES: Array<{
     filter: { "homeTeam.name": "Colombia", "awayTeam.name": "Ghana" },
     set: { kickoffDate: new Date("2026-07-04T01:30:00Z") },
   },
+  // ── Octavos de Final ──────────────────────────────────────────────────────
+  {
+    desc: "Portugal vs España        → 2026-07-06 13:00 GT",
+    filter: { "homeTeam.name": "Portugal", "awayTeam.name": "España" },
+    set: { kickoffDate: new Date("2026-07-06T13:00:00-06:00") },
+  },
+  {
+    desc: "Estados Unidos vs Bélgica → 2026-07-06 18:00 GT",
+    filter: { "homeTeam.name": "Estados Unidos", "awayTeam.name": "Bélgica" },
+    set: { kickoffDate: new Date("2026-07-06T18:00:00-06:00") },
+  },
+  {
+    desc: "Argentina vs Egipto       → 2026-07-07 10:00 GT",
+    filter: { "homeTeam.name": "Argentina", "awayTeam.name": "Egipto" },
+    set: { kickoffDate: new Date("2026-07-07T10:00:00-06:00") },
+  },
+  {
+    desc: "Suiza vs Colombia         → 2026-07-07 14:00 GT",
+    filter: { "homeTeam.name": "Suiza", "awayTeam.name": "Colombia" },
+    set: { kickoffDate: new Date("2026-07-07T14:00:00-06:00") },
+  },
   // ── Cuartos de Final ──────────────────────────────────────────────────────
   {
     desc: "M97 QF1 → 2026-07-09 14:00 GT, Boston (Gillette Stadium)",
@@ -56,6 +77,22 @@ const UPDATES: Array<{
       city: "Kansas City, Misuri",
     },
   },
+  // ── Cuartos de Final (equipos confirmados) ────────────────────────────────
+  {
+    desc: "España vs Bélgica → 2026-07-10 13:00 GT",
+    filter: { "homeTeam.name": "España", "awayTeam.name": "Bélgica" },
+    set: { kickoffDate: new Date("2026-07-10T13:00:00-06:00") },
+  },
+  {
+    desc: "Noruega vs Inglaterra → 2026-07-11 15:00 GT",
+    filter: { "homeTeam.name": "Noruega", "awayTeam.name": "Inglaterra" },
+    set: { kickoffDate: new Date("2026-07-11T15:00:00-06:00") },
+  },
+  {
+    desc: "Argentina vs Suiza → 2026-07-11 19:00 GT",
+    filter: { "homeTeam.name": "Argentina", "awayTeam.name": "Suiza" },
+    set: { kickoffDate: new Date("2026-07-11T19:00:00-06:00") },
+  },
   // ── Semifinales ───────────────────────────────────────────────────────────
   {
     desc: "M101 SF1 → 2026-07-14 18:00 GT, Dallas (AT&T Stadium)",
@@ -74,6 +111,17 @@ const UPDATES: Array<{
       stadium: "Estadio Atlanta (Mercedes-Benz Stadium)",
       city: "Atlanta, Georgia",
     },
+  },
+  // ── Semifinales (corrección de horario, equipos confirmados) ─────────────
+  {
+    desc: "Francia vs España → 2026-07-14 13:00 GT",
+    filter: { "homeTeam.name": "Francia", "awayTeam.name": "España" },
+    set: { kickoffDate: new Date("2026-07-14T13:00:00-06:00") },
+  },
+  {
+    desc: "Inglaterra vs Argentina → 2026-07-15 13:00 GT",
+    filter: { "homeTeam.name": "Inglaterra", "awayTeam.name": "Argentina" },
+    set: { kickoffDate: new Date("2026-07-15T13:00:00-06:00") },
   },
   // ── Final ─────────────────────────────────────────────────────────────────
   {

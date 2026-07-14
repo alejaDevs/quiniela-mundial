@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { Theme } from '../../Theme';
 import { IMatch } from '../../types/Index';
-import { apiGet, apiPut, apiPost } from '../../utils/ApiClient';
+import { apiGet, apiPut, apiPost, apiPatch } from '../../utils/ApiClient';
 import {
   adaptMatchFromApi,
   adaptMatchListFromApi
@@ -23,9 +23,63 @@ interface IMatchResponse {
   match: unknown;
 }
 
+interface IUserEntry {
+  id: string;
+  username: string;
+  displayName: string;
+  isActive: boolean;
+}
+
+interface IRawUser {
+  id?: string;
+  username?: string;
+  displayName?: string;
+  isActive?: boolean;
+}
+
+interface IUsersResponse {
+  users: unknown;
+}
+
+interface IUserResponse {
+  user: unknown;
+}
+
+const adaptUser = (raw: unknown): IUserEntry | null => {
+  if (typeof raw !== 'object' || raw === null) return null;
+  const data: IRawUser = raw as IRawUser;
+  if (
+    typeof data.id !== 'string' ||
+    typeof data.username !== 'string' ||
+    typeof data.displayName !== 'string' ||
+    typeof data.isActive !== 'boolean'
+  ) {
+    return null;
+  }
+  return {
+    id: data.id,
+    username: data.username,
+    displayName: data.displayName,
+    isActive: data.isActive
+  };
+};
+
+const adaptUserList = (raw: unknown): IUserEntry[] => {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map(adaptUser)
+    .filter((u: IUserEntry | null): u is IUserEntry => u !== null);
+};
+
 interface IDraft {
   homeScore: number | null;
   awayScore: number | null;
+}
+
+interface IFinalDraft {
+  finalHomeScore: number | null;
+  finalAwayScore: number | null;
+  winnerSide: 'home' | 'away' | null;
 }
 
 const headerStyle: CSSProperties = {
@@ -164,19 +218,17 @@ const actionButtonStyle = (disabled: boolean): CSSProperties => ({
   opacity: disabled ? 0.6 : 1
 });
 
+// Cuartos de Final en adelante (cuartos, semis, 3er lugar y final) se juegan
+// como una sola liga, por eso comparten una única fase de snapshot.
 type SnapshotPhaseKey =
   | 'round_of_32'
   | 'round_of_16'
-  | 'quarter_final'
-  | 'semi_final'
-  | 'final_all';
+  | 'quarter_final';
 
 const SNAPSHOT_PHASES: ReadonlyArray<{ key: SnapshotPhaseKey; label: string }> = [
   { key: 'round_of_32',   label: '16vos de Final' },
   { key: 'round_of_16',   label: 'Octavos de Final' },
-  { key: 'quarter_final', label: 'Cuartos de Final' },
-  { key: 'semi_final',    label: 'Semifinales' },
-  { key: 'final_all',     label: 'Final' },
+  { key: 'quarter_final', label: 'Cuartos de Final en Adelante' },
 ];
 
 const chipStyle = (selected: boolean): CSSProperties => ({
@@ -193,6 +245,20 @@ const chipStyle = (selected: boolean): CSSProperties => ({
     : `1px solid ${Theme.Colors.surfaceContainerHighest}`,
   cursor: 'pointer',
   transition: 'background-color 0.15s, color 0.15s',
+});
+
+const winnerButtonStyle = (selected: boolean): CSSProperties => ({
+  padding: `${Theme.Spacing.xs} ${Theme.Spacing.md}`,
+  borderRadius: Theme.Radii.md,
+  fontFamily: Theme.Typography.fontFamilyBody,
+  fontSize: Theme.Typography.labelMd.fontSize,
+  fontWeight: Theme.Typography.labelMd.fontWeight,
+  backgroundColor: selected ? Theme.Colors.primary : Theme.Colors.surfaceContainerLow,
+  color: selected ? Theme.Colors.onPrimary : Theme.Colors.onSurfaceVariant,
+  border: selected
+    ? `1px solid ${Theme.Colors.primary}`
+    : `1px solid ${Theme.Colors.outlineVariant}`,
+  cursor: 'pointer',
 });
 
 const warningStyle: CSSProperties = {
@@ -226,10 +292,17 @@ export const Admin = (): ReactElement => {
   const [loading, setLoading] = useState<boolean>(true);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [submittingId, setSubmittingId] = useState<string | null>(null);
+  const [finalDrafts, setFinalDrafts] = useState<Map<string, IFinalDraft>>(new Map());
+  const [finalFeedback, setFinalFeedback] = useState<string | null>(null);
+  const [submittingFinalId, setSubmittingFinalId] = useState<string | null>(null);
   const [selectedPhase, setSelectedPhase] = useState<SnapshotPhaseKey>('round_of_32');
   const [snapshotLoading, setSnapshotLoading] = useState<boolean>(false);
   const [snapshotFeedback, setSnapshotFeedback] = useState<string | null>(null);
   const [snapshotError, setSnapshotError] = useState<boolean>(false);
+  const [users, setUsers] = useState<IUserEntry[]>([]);
+  const [usersLoading, setUsersLoading] = useState<boolean>(true);
+  const [userFeedback, setUserFeedback] = useState<string | null>(null);
+  const [togglingUserId, setTogglingUserId] = useState<string | null>(null);
 
   const load = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -243,9 +316,20 @@ export const Admin = (): ReactElement => {
     }
   }, []);
 
+  const loadUsers = useCallback(async (): Promise<void> => {
+    setUsersLoading(true);
+    try {
+      const response: IUsersResponse = await apiGet<IUsersResponse>('/api/users');
+      setUsers(adaptUserList(response.users));
+    } finally {
+      setUsersLoading(false);
+    }
+  }, []);
+
   useEffect((): void => {
     void load();
-  }, [load]);
+    void loadUsers();
+  }, [load, loadUsers]);
 
   const updateDraft = (
     matchId: string,
@@ -309,6 +393,73 @@ export const Admin = (): ReactElement => {
     }
   };
 
+  const updateFinalDraft = (
+    matchId: string,
+    patch: Partial<IFinalDraft>
+  ): void => {
+    setFinalDrafts((prev: Map<string, IFinalDraft>): Map<string, IFinalDraft> => {
+      const next: Map<string, IFinalDraft> = new Map(prev);
+      const current: IFinalDraft = next.get(matchId) ?? {
+        finalHomeScore: null,
+        finalAwayScore: null,
+        winnerSide: null
+      };
+      next.set(matchId, { ...current, ...patch });
+      return next;
+    });
+  };
+
+  const handlePublishFinalResult = async (match: IMatch): Promise<void> => {
+    const draft: IFinalDraft | undefined = finalDrafts.get(match.id);
+    if (
+      draft === undefined ||
+      draft.finalHomeScore === null ||
+      draft.finalAwayScore === null
+    ) {
+      setFinalFeedback('Ingresa el resultado final antes de publicar.');
+      return;
+    }
+    if (draft.finalHomeScore === draft.finalAwayScore && draft.winnerSide === null) {
+      setFinalFeedback('El resultado final quedó empatado: indica quién avanzó.');
+      return;
+    }
+    setSubmittingFinalId(match.id);
+    setFinalFeedback(null);
+    try {
+      const response: IMatchResponse = await apiPut<IMatchResponse>(
+        `/api/matches/${match.id}/final-result`,
+        {
+          finalHomeScore: draft.finalHomeScore,
+          finalAwayScore: draft.finalAwayScore,
+          winnerSide: draft.winnerSide
+        }
+      );
+      const updated: IMatch = adaptMatchFromApi(response.match);
+      setMatches(
+        (prev: IMatch[]): IMatch[] =>
+          prev.map((m: IMatch): IMatch => (m.id === updated.id ? updated : m))
+      );
+      setFinalDrafts(
+        (prev: Map<string, IFinalDraft>): Map<string, IFinalDraft> => {
+          const next: Map<string, IFinalDraft> = new Map(prev);
+          next.delete(match.id);
+          return next;
+        }
+      );
+      setFinalFeedback(
+        `Resultado final publicado para ${match.homeTeam.name} vs ${match.awayTeam.name}.`
+      );
+    } catch (err: unknown) {
+      const message: string =
+        typeof err === 'object' && err !== null && 'message' in err
+          ? String((err as { message: unknown }).message)
+          : 'Error al publicar resultado final';
+      setFinalFeedback(message);
+    } finally {
+      setSubmittingFinalId(null);
+    }
+  };
+
   const handleSaveSnapshot = async (): Promise<void> => {
     setSnapshotLoading(true);
     setSnapshotFeedback(null);
@@ -332,8 +483,42 @@ export const Admin = (): ReactElement => {
     }
   };
 
+  const handleToggleUserActive = async (user: IUserEntry): Promise<void> => {
+    setTogglingUserId(user.id);
+    setUserFeedback(null);
+    try {
+      const response: IUserResponse = await apiPatch<IUserResponse>(
+        `/api/users/${user.id}/active`,
+        { isActive: !user.isActive }
+      );
+      const updated: IUserEntry | null = adaptUser(response.user);
+      if (updated !== null) {
+        setUsers(
+          (prev: IUserEntry[]): IUserEntry[] =>
+            prev.map((u: IUserEntry): IUserEntry => (u.id === updated.id ? updated : u))
+        );
+      }
+    } catch (err: unknown) {
+      const message: string =
+        typeof err === 'object' && err !== null && 'message' in err
+          ? String((err as { message: unknown }).message)
+          : 'Error al actualizar el usuario';
+      setUserFeedback(message);
+    } finally {
+      setTogglingUserId(null);
+    }
+  };
+
   const playableMatches: IMatch[] = matches.filter(
     (m: IMatch): boolean => !m.isFinished
+  );
+
+  const tiedKnockoutMatches: IMatch[] = matches.filter(
+    (m: IMatch): boolean =>
+      m.isFinished &&
+      m.stage !== 'group' &&
+      m.homeScore === m.awayScore &&
+      m.finalHomeScore === null
   );
 
   return (
@@ -465,6 +650,160 @@ export const Admin = (): ReactElement => {
 
       <section style={{ ...workspaceStyle, marginTop: Theme.Spacing.xl }}>
         <div style={sectionHeader}>
+          <h2 style={sectionTitleStyle}>Definir Resultado Final (Empates en 90&apos;)</h2>
+          {finalFeedback !== null ? (
+            <span
+              style={{
+                fontFamily: Theme.Typography.fontFamilyBody,
+                fontSize: Theme.Typography.labelMd.fontSize,
+                color: Theme.Colors.onSurfaceVariant
+              }}
+            >
+              {finalFeedback}
+            </span>
+          ) : null}
+        </div>
+
+        <p style={warningStyle}>
+          Estos partidos terminaron empatados en el minuto 90. El marcador de
+          90&apos; ya se usó para calificar los pronósticos; aquí solo se
+          define quién avanza en el cuadro (tiempo extra / penales).
+        </p>
+
+        {tiedKnockoutMatches.length === 0 ? (
+          <div
+            style={{
+              padding: Theme.Spacing.lg,
+              textAlign: 'center',
+              color: Theme.Colors.onSurfaceVariant
+            }}
+          >
+            No hay partidos empatados pendientes de definición.
+          </div>
+        ) : (
+          <div style={listStyle}>
+            {tiedKnockoutMatches.map(
+              (match: IMatch): ReactElement => {
+                const draft: IFinalDraft = finalDrafts.get(match.id) ?? {
+                  finalHomeScore: null,
+                  finalAwayScore: null,
+                  winnerSide: null
+                };
+                const isSubmitting: boolean = submittingFinalId === match.id;
+                const isTiedDraft: boolean =
+                  draft.finalHomeScore !== null &&
+                  draft.finalAwayScore !== null &&
+                  draft.finalHomeScore === draft.finalAwayScore;
+                return (
+                  <div key={match.id} style={rowStyle}>
+                    <div style={teamCellStyle}>
+                      <FlagIcon
+                        countryCode={match.homeTeam.countryCode}
+                        alt={`Bandera de ${match.homeTeam.name}`}
+                      />
+                      <span style={teamNameStyle}>{match.homeTeam.name}</span>
+                    </div>
+                    <div style={scoreCellStyle}>
+                      <input
+                        type="number"
+                        min="0"
+                        placeholder="-"
+                        value={
+                          draft.finalHomeScore === null ? '' : String(draft.finalHomeScore)
+                        }
+                        onChange={(e: ChangeEvent<HTMLInputElement>): void =>
+                          updateFinalDraft(match.id, {
+                            finalHomeScore: parseScore(e.target.value),
+                            winnerSide: null
+                          })
+                        }
+                        style={inputStyle}
+                      />
+                      <span style={colonStyle}>:</span>
+                      <input
+                        type="number"
+                        min="0"
+                        placeholder="-"
+                        value={
+                          draft.finalAwayScore === null ? '' : String(draft.finalAwayScore)
+                        }
+                        onChange={(e: ChangeEvent<HTMLInputElement>): void =>
+                          updateFinalDraft(match.id, {
+                            finalAwayScore: parseScore(e.target.value),
+                            winnerSide: null
+                          })
+                        }
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div style={{ ...teamCellStyle, justifyContent: 'flex-end' }}>
+                      <span style={teamNameStyle}>{match.awayTeam.name}</span>
+                      <FlagIcon
+                        countryCode={match.awayTeam.countryCode}
+                        alt={`Bandera de ${match.awayTeam.name}`}
+                      />
+                    </div>
+                    {isTiedDraft ? (
+                      <div
+                        style={{
+                          flex: '1 1 100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: Theme.Spacing.sm,
+                          justifyContent: 'center'
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontFamily: Theme.Typography.fontFamilyBody,
+                            fontSize: Theme.Typography.labelMd.fontSize,
+                            color: Theme.Colors.onSurfaceVariant
+                          }}
+                        >
+                          Empate en resultado final, ¿quién avanza?
+                        </span>
+                        <button
+                          type="button"
+                          style={winnerButtonStyle(draft.winnerSide === 'home')}
+                          onClick={(): void =>
+                            updateFinalDraft(match.id, { winnerSide: 'home' })
+                          }
+                        >
+                          {match.homeTeam.name}
+                        </button>
+                        <button
+                          type="button"
+                          style={winnerButtonStyle(draft.winnerSide === 'away')}
+                          onClick={(): void =>
+                            updateFinalDraft(match.id, { winnerSide: 'away' })
+                          }
+                        >
+                          {match.awayTeam.name}
+                        </button>
+                      </div>
+                    ) : null}
+                    <div style={{ flex: '1 1 100%', display: 'flex', justifyContent: 'flex-end' }}>
+                      <button
+                        type="button"
+                        disabled={isSubmitting}
+                        onClick={(): void => {
+                          void handlePublishFinalResult(match);
+                        }}
+                        style={actionButtonStyle(isSubmitting)}
+                      >
+                        {isSubmitting ? 'Publicando…' : 'Publicar Resultado Final'}
+                      </button>
+                    </div>
+                  </div>
+                );
+              }
+            )}
+          </div>
+        )}
+      </section>
+
+      <section style={{ ...workspaceStyle, marginTop: Theme.Spacing.xl }}>
+        <div style={sectionHeader}>
           <h2 style={sectionTitleStyle}>Cerrar Fase Manualmente</h2>
           {snapshotFeedback !== null ? (
             <span
@@ -510,6 +849,101 @@ export const Admin = (): ReactElement => {
             {snapshotLoading ? 'Guardando…' : 'Guardar Snapshot de Fase'}
           </button>
         </div>
+      </section>
+
+      <section style={{ ...workspaceStyle, marginTop: Theme.Spacing.xl }}>
+        <div style={sectionHeader}>
+          <h2 style={sectionTitleStyle}>Gestionar Usuarios</h2>
+          {userFeedback !== null ? (
+            <span
+              style={{
+                fontFamily: Theme.Typography.fontFamilyBody,
+                fontSize: Theme.Typography.labelMd.fontSize,
+                color: Theme.Colors.error
+              }}
+            >
+              {userFeedback}
+            </span>
+          ) : null}
+        </div>
+
+        <p style={warningStyle}>
+          Ocultar a un usuario lo quita de la liga y del historial de puntajes
+          sin borrar sus pronósticos; puedes volver a mostrarlo cuando quieras.
+        </p>
+
+        {usersLoading ? (
+          <div
+            style={{
+              padding: Theme.Spacing.lg,
+              textAlign: 'center',
+              color: Theme.Colors.onSurfaceVariant
+            }}
+          >
+            Cargando usuarios…
+          </div>
+        ) : users.length === 0 ? (
+          <div
+            style={{
+              padding: Theme.Spacing.lg,
+              textAlign: 'center',
+              color: Theme.Colors.onSurfaceVariant
+            }}
+          >
+            No hay usuarios registrados.
+          </div>
+        ) : (
+          <div style={listStyle}>
+            {users.map(
+              (user: IUserEntry): ReactElement => {
+                const isToggling: boolean = togglingUserId === user.id;
+                return (
+                  <div key={user.id} style={rowStyle}>
+                    <div style={teamCellStyle}>
+                      <span style={teamNameStyle}>{user.displayName}</span>
+                      <span
+                        style={{
+                          fontFamily: Theme.Typography.fontFamilyBody,
+                          fontSize: Theme.Typography.labelMd.fontSize,
+                          color: Theme.Colors.onSurfaceVariant
+                        }}
+                      >
+                        @{user.username}
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        flex: '1 1 auto',
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        alignItems: 'center',
+                        gap: Theme.Spacing.sm
+                      }}
+                    >
+                      {!user.isActive ? (
+                        <span style={chipStyle(false)}>Oculto de la liga</span>
+                      ) : null}
+                      <button
+                        type="button"
+                        disabled={isToggling}
+                        onClick={(): void => {
+                          void handleToggleUserActive(user);
+                        }}
+                        style={actionButtonStyle(isToggling)}
+                      >
+                        {isToggling
+                          ? 'Actualizando…'
+                          : user.isActive
+                            ? 'Ocultar de la Liga'
+                            : 'Mostrar en la Liga'}
+                      </button>
+                    </div>
+                  </div>
+                );
+              }
+            )}
+          </div>
+        )}
       </section>
     </>
   );

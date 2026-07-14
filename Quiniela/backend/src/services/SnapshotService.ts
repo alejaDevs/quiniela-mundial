@@ -3,24 +3,9 @@ import { MatchModel, IMatchDocument, MatchStage } from '../models/Match';
 import { PredictionModel, IPredictionDocument } from '../models/Prediction';
 import { PhaseSnapshotModel, IPhaseSnapshotEntry } from '../models/PhaseSnapshot';
 import { calculatePredictionPoints } from '../utils/ScoreCalculator';
+import { PHASE_STAGES, PHASE_NAMES, ORDERED_KNOCKOUT_STAGES, isPhaseKey } from '../config/Phases';
 
-const PHASE_STAGES: Record<string, MatchStage[]> = {
-  group:         ['group'],
-  round_of_32:   ['round_of_32'],
-  round_of_16:   ['round_of_16'],
-  quarter_final: ['quarter_final'],
-  semi_final:    ['semi_final'],
-  final_all:     ['final', 'third_place'],
-};
-
-const PHASE_NAMES: Record<string, string> = {
-  group:         'Fase de Grupos',
-  round_of_32:   '16vos de Final',
-  round_of_16:   'Octavos de Final',
-  quarter_final: 'Cuartos de Final',
-  semi_final:    'Semifinales',
-  final_all:     'Final',
-};
+export { ORDERED_KNOCKOUT_STAGES };
 
 interface IUserStats {
   totalPoints: number;
@@ -29,12 +14,11 @@ interface IUserStats {
 }
 
 export const computeAndSaveSnapshot = async (phase: string): Promise<void> => {
-  const stages: MatchStage[] | undefined = PHASE_STAGES[phase];
-  if (stages === undefined) {
+  if (!isPhaseKey(phase)) {
     return;
   }
-
-  const phaseName: string = PHASE_NAMES[phase] ?? phase;
+  const stages: MatchStage[] = PHASE_STAGES[phase];
+  const phaseName: string = PHASE_NAMES[phase];
 
   const [users, stageMatches, predictions] = await Promise.all([
     UserModel.find({ isAdmin: false, isActive: { $ne: false } }).lean<IUserDocument[]>(),
@@ -113,12 +97,3 @@ export const computeAndSaveSnapshot = async (phase: string): Promise<void> => {
     { upsert: true, new: true }
   );
 };
-
-export const ORDERED_KNOCKOUT_STAGES: MatchStage[] = [
-  'round_of_32',
-  'round_of_16',
-  'quarter_final',
-  'semi_final',
-  'third_place',
-  'final',
-];

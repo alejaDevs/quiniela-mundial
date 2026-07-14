@@ -5,6 +5,8 @@ import { PredictionModel, IPredictionDocument } from '../models/Prediction';
 import { UserModel, IUserDocument } from '../models/User';
 import { calculatePredictionPoints } from '../utils/ScoreCalculator';
 import { computeAndSaveSnapshot } from '../services/SnapshotService';
+import { resolveMatchWinner, MatchSide } from '../utils/MatchWinner';
+import { PHASE_STAGES, stageToPhaseKey } from '../config/Phases';
 
 const VALID_STAGES: MatchStage[] = [
   'group',
@@ -115,6 +117,52 @@ const parseResultBody = (body: unknown): IUpdateResultBody | null => {
     return null;
   }
   return { homeScore: candidate.homeScore, awayScore: candidate.awayScore };
+};
+
+interface IUpdateFinalResultBody {
+  finalHomeScore: number;
+  finalAwayScore: number;
+  winnerSide: MatchSide | null;
+}
+
+const parseFinalResultBody = (body: unknown): IUpdateFinalResultBody | null => {
+  if (typeof body !== 'object' || body === null) {
+    return null;
+  }
+  const candidate: Record<string, unknown> = body as Record<string, unknown>;
+  if (
+    typeof candidate.finalHomeScore !== 'number' ||
+    typeof candidate.finalAwayScore !== 'number'
+  ) {
+    return null;
+  }
+  if (
+    !Number.isInteger(candidate.finalHomeScore) ||
+    !Number.isInteger(candidate.finalAwayScore) ||
+    candidate.finalHomeScore < 0 ||
+    candidate.finalAwayScore < 0
+  ) {
+    return null;
+  }
+
+  let winnerSide: MatchSide | null = null;
+  if (candidate.winnerSide === 'home' || candidate.winnerSide === 'away') {
+    winnerSide = candidate.winnerSide;
+  } else if (candidate.winnerSide !== undefined && candidate.winnerSide !== null) {
+    return null;
+  }
+
+  // Un empate en el resultado final (ej. definido en penales) requiere que
+  // el admin indique explícitamente quién avanza.
+  if (candidate.finalHomeScore === candidate.finalAwayScore && winnerSide === null) {
+    return null;
+  }
+
+  return {
+    finalHomeScore: candidate.finalHomeScore,
+    finalAwayScore: candidate.finalAwayScore,
+    winnerSide
+  };
 };
 
 export const listMatches = async (
@@ -259,6 +307,50 @@ export const listMatchPredictions = async (
   }
 };
 
+// Propaga el ganador (y perdedor, para semis) al siguiente partido de la
+// llave, y dispara el cálculo de snapshot cuando una fase queda completa.
+// Fire-and-forget: los errores no deben afectar la respuesta HTTP ya enviada.
+const propagateWinnerAndCheckSnapshot = async (
+  updated: IMatchDocument
+): Promise<void> => {
+  try {
+    const stage: MatchStage = updated.stage;
+    if (stage === 'group') return;
+
+    const winner: MatchSide | null = resolveMatchWinner(updated);
+
+    if (winner !== null && updated.nextMatchId) {
+      const winnerTeam = winner === 'home' ? updated.homeTeam : updated.awayTeam;
+      const loserTeam = winner === 'home' ? updated.awayTeam : updated.homeTeam;
+
+      const winnerField = updated.nextMatchSlot === 'home' ? 'homeTeam' : 'awayTeam';
+      await MatchModel.findByIdAndUpdate(updated.nextMatchId, { [winnerField]: winnerTeam });
+
+      if (updated.loserNextMatchId && updated.loserNextMatchSlot) {
+        const loserField = updated.loserNextMatchSlot === 'home' ? 'homeTeam' : 'awayTeam';
+        await MatchModel.findByIdAndUpdate(updated.loserNextMatchId, { [loserField]: loserTeam });
+      }
+    }
+
+    // Cuartos de Final en adelante (cuartos, semis, 3er lugar y final) se
+    // juegan como una sola liga: solo se genera el snapshot hasta que TODAS
+    // esas etapas están finalizadas, no una por una.
+    const phaseKey = stageToPhaseKey(stage);
+    if (phaseKey === undefined) return;
+
+    const phaseStages: MatchStage[] = PHASE_STAGES[phaseKey];
+    const pending: number = await MatchModel.countDocuments({
+      stage: { $in: phaseStages },
+      isFinished: false
+    });
+    if (pending === 0) {
+      await computeAndSaveSnapshot(phaseKey);
+    }
+  } catch {
+    // fire-and-forget: errors must not affect the response
+  }
+};
+
 export const updateMatchResult = async (
   req: Request,
   res: Response,
@@ -289,44 +381,60 @@ export const updateMatchResult = async (
 
     res.status(200).json({ match: updated });
 
-    void (async (): Promise<void> => {
-      try {
-        const stage: MatchStage = updated.stage;
-        if (stage === 'group') return;
+    void propagateWinnerAndCheckSnapshot(updated);
+  } catch (error: unknown) {
+    next(error);
+  }
+};
 
-        // Propagate winner (and loser for semis) to next round matches
-        if (updated.nextMatchId && updated.homeScore !== null && updated.awayScore !== null) {
-          const winner = updated.homeScore >= updated.awayScore ? updated.homeTeam : updated.awayTeam;
-          const loser  = updated.homeScore >= updated.awayScore ? updated.awayTeam : updated.homeTeam;
+export const updateMatchFinalResult = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const id: string = req.params.id;
+    const body: IUpdateFinalResultBody | null = parseFinalResultBody(req.body);
+    if (body === null) {
+      res.status(400).json({
+        message:
+          'finalHomeScore y finalAwayScore deben ser enteros no negativos; si empatan, winnerSide (home|away) es requerido'
+      });
+      return;
+    }
 
-          const winnerField = updated.nextMatchSlot === 'home' ? 'homeTeam' : 'awayTeam';
-          await MatchModel.findByIdAndUpdate(updated.nextMatchId, { [winnerField]: winner });
+    const existing: IMatchDocument | null = await MatchModel.findById(id);
+    if (existing === null) {
+      res.status(404).json({ message: 'Match not found' });
+      return;
+    }
+    if (existing.stage === 'group') {
+      res.status(400).json({ message: 'El resultado final solo aplica a partidos de eliminación directa' });
+      return;
+    }
+    if (!existing.isFinished) {
+      res.status(400).json({ message: 'Primero debe publicarse el resultado del partido' });
+      return;
+    }
 
-          if (updated.loserNextMatchId && updated.loserNextMatchSlot) {
-            const loserField = updated.loserNextMatchSlot === 'home' ? 'homeTeam' : 'awayTeam';
-            await MatchModel.findByIdAndUpdate(updated.loserNextMatchId, { [loserField]: loser });
-          }
-        }
+    const updated: IMatchDocument | null = await MatchModel.findByIdAndUpdate(
+      id,
+      {
+        finalHomeScore: body.finalHomeScore,
+        finalAwayScore: body.finalAwayScore,
+        winnerSide: body.winnerSide
+      },
+      { new: true }
+    );
 
-        if (stage === 'final' || stage === 'third_place') {
-          const [finalPending, thirdPending] = await Promise.all([
-            MatchModel.countDocuments({ stage: 'final', isFinished: false }),
-            MatchModel.countDocuments({ stage: 'third_place', isFinished: false }),
-          ]);
-          if (finalPending === 0 && thirdPending === 0) {
-            await computeAndSaveSnapshot('final_all');
-          }
-          return;
-        }
+    if (updated === null) {
+      res.status(404).json({ message: 'Match not found' });
+      return;
+    }
 
-        const pending: number = await MatchModel.countDocuments({ stage, isFinished: false });
-        if (pending === 0) {
-          await computeAndSaveSnapshot(stage);
-        }
-      } catch {
-        // fire-and-forget: errors must not affect the response
-      }
-    })();
+    res.status(200).json({ match: updated });
+
+    void propagateWinnerAndCheckSnapshot(updated);
   } catch (error: unknown) {
     next(error);
   }

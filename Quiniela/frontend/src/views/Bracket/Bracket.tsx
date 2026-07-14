@@ -5,6 +5,7 @@ import { apiGet } from '../../utils/ApiClient';
 import { adaptMatchListFromApi } from '../../adapters/MatchAdapter';
 import { FlagIcon } from '../../components/FlagIcon';
 import { useIsMobile } from '../../utils/UseIsMobile';
+import { resolveMatchWinner } from '../../utils/MatchWinner';
 
 // ── Layout constants ──────────────────────────────────────────────────────────
 //
@@ -78,10 +79,7 @@ const BracketMatchCard = ({
 
   const { isFinished, homeScore, awayScore, homeTeam, awayTeam } = match;
 
-  const winner: 'home' | 'away' | null =
-    isFinished && homeScore !== null && awayScore !== null
-      ? homeScore > awayScore ? 'home' : awayScore > homeScore ? 'away' : null
-      : null;
+  const winner: 'home' | 'away' | null = isFinished ? resolveMatchWinner(match) : null;
 
   const TeamRow = ({ side, score }: { side: 'home' | 'away'; score: number | null }): ReactElement => {
     const team = side === 'home' ? homeTeam : awayTeam;

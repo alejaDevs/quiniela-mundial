@@ -29,6 +29,9 @@ export interface IMatch {
   homeScore: number | null;
   awayScore: number | null;
   isFinished: boolean;
+  finalHomeScore: number | null;
+  finalAwayScore: number | null;
+  winnerSide: 'home' | 'away' | null;
   updatedAt: string;
   stadium: string | null;
   city: string | null;
